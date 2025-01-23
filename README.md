@@ -1,1 +1,1 @@
-# BE_Project
+# Internship-Project-with-Electron
