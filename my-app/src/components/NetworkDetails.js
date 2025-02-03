@@ -45,7 +45,7 @@ const NoData = styled.div`
   text-align: center;
 `;
 
-const CheckSystemHealth = () => {
+const NetworkDetails = () => {
   const [trackStatus, setTrackStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
@@ -56,7 +56,7 @@ const CheckSystemHealth = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'http://localhost:8000/api/check-system-health',
+        'http://localhost:8000/api/display-network-details',
         {
           macAddress: macAddress,
         }
@@ -88,22 +88,18 @@ const CheckSystemHealth = () => {
                 <thead>
                   <tr>
                     <Th>Timestamp</Th>
-                    <Th>CPU Usage (in %)</Th>
-                    <Th>Memory Used (in GB)</Th>
-                    <Th>Memory Total (in GB)</Th>
-                    <Th>Disk Used (in GB)</Th>
-                    <Th>Disk Total (in GB)</Th>
+                    <Th>Interface</Th>
+                    <Th>IP Address</Th>
+                    <Th>Netmask</Th>
                   </tr>
                 </thead>
                 <tbody>
                   {trackStatus.map((item, index) => (
                     <tr key={index}>
                       <Td>{item.timestamp}</Td>
-                      <Td>{item.cpu_usage}</Td>
-                      <Td>{item.memory_used}</Td>
-                      <Td>{item.memory_total}</Td>
-                      <Td>{item.disk_used}</Td>
-                      <Td>{item.disk_total}</Td>
+                      <Td>{item.interface}</Td>
+                      <Td>{item.ip_address}</Td>
+                      <Td>{item.netmask}</Td>
                     </tr>
                   ))}
                 </tbody>
@@ -118,4 +114,4 @@ const CheckSystemHealth = () => {
   );
 };
 
-export default CheckSystemHealth;
+export default NetworkDetails;

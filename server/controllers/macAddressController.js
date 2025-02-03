@@ -1,11 +1,12 @@
 const { getMACAddress } = require('../models/macadd');
 const { MongoClient } = require('mongodb');
 const AppUsage = require('../models/appUsage');
-const path = require('path')
+const path = require('path');
 const { spawn } = require('child_process');
 let trackingProcess;
 
-const MONGODB_URI = "mongodb+srv://manav2031:Ma310703@cluster0.8n47utm.mongodb.net/";
+const MONGODB_URI =
+  'mongodb+srv://manav2031:Ma310703@cluster0.8n47utm.mongodb.net/';
 
 exports.checkMACAddress = async (req, res) => {
   const { macAddress } = req.body;
@@ -49,7 +50,6 @@ exports.startTracking = async (req, res) => {
   res.json({ message: 'Tracking started' });
 };
 
-
 exports.stopTracking = async (req, res) => {
   if (!trackingProcess) {
     return res.status(400).json({ message: 'Tracking is not active' });
@@ -59,13 +59,18 @@ exports.stopTracking = async (req, res) => {
   try {
     trackingProcess.kill('SIGINT');
   } catch (err) {
-    console.error('Error occurred while trying to kill the tracking process:', err);
+    console.error(
+      'Error occurred while trying to kill the tracking process:',
+      err
+    );
     return res.status(500).json({ error: 'Error stopping tracking process' });
   }
 
   // Wait for the process to exit
   trackingProcess.on('exit', (code, signal) => {
-    console.log(`Tracking process exited with code ${code} and signal ${signal}`);
+    console.log(
+      `Tracking process exited with code ${code} and signal ${signal}`
+    );
     trackingProcess = null; // Reset the reference to the tracking process
     res.json({ message: 'Tracking stopped' });
   });
@@ -76,7 +81,10 @@ exports.stopTracking = async (req, res) => {
       try {
         trackingProcess.kill('SIGKILL');
       } catch (err) {
-        console.error('Error occurred while forcefully killing the tracking process:', err);
+        console.error(
+          'Error occurred while forcefully killing the tracking process:',
+          err
+        );
       } finally {
         trackingProcess = null; // Reset the reference to the tracking process
       }
@@ -88,7 +96,7 @@ exports.stopTracking = async (req, res) => {
 
 exports.getTracking = async (req, res) => {
   console.log(req.body);
-  const {macAddress} = req.body;
+  const { macAddress } = req.body;
   console.log(macAddress);
   const client = new MongoClient(MONGODB_URI);
   try {
@@ -99,7 +107,7 @@ exports.getTracking = async (req, res) => {
 
     // Fetch data
     const data = await collection.find().toArray();
-    console.log(data)
+    console.log(data);
     res.json(data);
   } catch (error) {
     console.error('Error:', error);
@@ -110,5 +118,124 @@ exports.getTracking = async (req, res) => {
   }
 };
 
+exports.displayBrowserHistory = async (req, res) => {
+  console.log(req.body);
+  const { macAddress } = req.body;
+  console.log(macAddress);
+  const client = new MongoClient(MONGODB_URI);
+  try {
+    await client.connect();
 
+    const database = client.db(macAddress);
+    const collection = database.collection('browser_history_' + macAddress);
 
+    // Fetch data
+    const data = await collection.find().toArray();
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    // Close the database connection
+    await client.close();
+  }
+};
+
+exports.checkSystemHealth = async (req, res) => {
+  console.log(req.body);
+  const { macAddress } = req.body;
+  console.log(macAddress);
+  const client = new MongoClient(MONGODB_URI);
+  try {
+    await client.connect();
+
+    const database = client.db(macAddress);
+    const collection = database.collection('system_health_' + macAddress);
+
+    // Fetch data
+    const data = await collection.find().toArray();
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    // Close the database connection
+    await client.close();
+  }
+};
+
+exports.displayNetworkDetails = async (req, res) => {
+  console.log(req.body);
+  const { macAddress } = req.body;
+  console.log(macAddress);
+  const client = new MongoClient(MONGODB_URI);
+  try {
+    await client.connect();
+
+    const database = client.db(macAddress);
+    const collection = database.collection('network_details_' + macAddress);
+
+    // Fetch data
+    const data = await collection.find().toArray();
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    // Close the database connection
+    await client.close();
+  }
+};
+
+exports.displayNetworkRequests = async (req, res) => {
+  console.log(req.body);
+  const { macAddress } = req.body;
+  console.log(macAddress);
+  const client = new MongoClient(MONGODB_URI);
+  try {
+    await client.connect();
+
+    const database = client.db(macAddress);
+    const collection = database.collection('network_requests_' + macAddress);
+
+    // Fetch data
+    const data = await collection.find().toArray();
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    // Close the database connection
+    await client.close();
+  }
+};
+
+exports.displayConnectedDevices = async (req, res) => {
+  console.log(req.body);
+  const { macAddress } = req.body;
+  console.log(macAddress);
+  const client = new MongoClient(MONGODB_URI);
+  try {
+    await client.connect();
+
+    const database = client.db(macAddress);
+    const collection = database.collection(
+      'connected_devices_details_' + macAddress
+    );
+
+    // Fetch data
+    const data = await collection.find().toArray();
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    // Close the database connection
+    await client.close();
+  }
+};

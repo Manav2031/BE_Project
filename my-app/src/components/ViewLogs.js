@@ -1,55 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Container = styled.div`
   width: 100%;
   height: 100vh;
+  margin-top: 20px;
+  margin-bottom: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const FormContainer = styled.div`
-  width: 80%;
-  max-width: 400px;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-`;
-
-const Input = styled.input`
-  width: 90%;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-`;
-
-const Button = styled.button`
-  width: 50%;
-  text-align: center;
-  margin-left: 100px;
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #0056b3;
-  }
+  background-color: #f5f5f5;
 `;
 
 const TableContainer = styled.div`
-  margin-top: 20px;
-  max-height: 70vh; /* Limit the height of the table container */
-  overflow-y: auto; /* Add vertical scroll for overflow */
+  width: 100%;
+  height: 100vh;
+  padding: 20px;
+  background-color: #fff;
 `;
 
 const Table = styled.table`
@@ -59,114 +28,71 @@ const Table = styled.table`
 
 const Th = styled.th`
   border: 1px solid #ddd;
-  padding: 8px;
-  background-color: #f2f2f2;
-  color: #333;
+  padding: 12px;
+  background-color: #007bff;
+  color: #fff;
+  text-align: left;
 `;
 
 const Td = styled.td`
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 12px;
 `;
 
 const NoData = styled.div`
   margin-top: 10px;
   color: #555;
+  text-align: center;
 `;
 
 const ViewLogs = () => {
-  const [macAddress, setMacAddress] = useState('');
-  const [isTracking, setIsTracking] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [trackStatus, setTrackStatus] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
+  const macAddress = location.state?.macAddress; // Get MAC address from state
 
-  const handleInputChange = (e) => {
-    setMacAddress(e.target.value);
-  };
-
-  const startTracking = async () => {
+  // Function to fetch tracking data
+  const fetchTrackingData = async () => {
     try {
-      if (macAddress === '') {
-        toast.error('MAC Address is required.');
-        return;
-      }
       setIsLoading(true);
       const response = await axios.post(
-        'http://localhost:8000/api/startTracking',
-        { macAddress }
-      );
-      setTrackStatus(response.data.message);
-      setIsTracking(true);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-    }
-  };
-
-  const getTracking = async () => {
-    try {
-      const trackingResponse = await axios.post(
         'http://localhost:8000/api/getTracking',
         {
           macAddress: macAddress,
         }
       );
-
-      setTrackStatus(trackingResponse.data);
-      setIsTracking(true);
+      setTrackStatus(response.data);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error('Error fetching tracking data:', error);
       setIsLoading(false);
     }
   };
 
-  const stopTracking = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.post(
-        'http://localhost:8000/api/stopTracking'
-      );
-      setTrackStatus(response.data.message);
-      setIsTracking(false);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-    }
-  };
+  // Use useEffect to fetch data periodically
+  useEffect(() => {
+    fetchTrackingData(); // Fetch data immediately on component mount
+    const interval = setInterval(fetchTrackingData, 5000); // Fetch data every 5 seconds
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, [macAddress]);
 
   return (
     <Container>
-      <FormContainer>
-        <Input
-          type="text"
-          value={macAddress}
-          onChange={handleInputChange}
-          placeholder="Enter MAC address"
-        />
-        {!isTracking ? (
-          <Button onClick={startTracking}>Start Tracking</Button>
+      <TableContainer>
+        {isLoading ? (
+          <NoData>Loading...</NoData>
         ) : (
           <>
-            <Button onClick={stopTracking}>Stop Tracking</Button>
-            <br /> <br />
-            <Button onClick={getTracking}>Display Tracking</Button>
-          </>
-        )}
-
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <TableContainer>
             {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
               <Table>
                 <thead>
                   <tr>
                     <Th>Timestamp</Th>
                     <Th>Process ID</Th>
-                    <Th>Name</Th>
+                    <Th>Process Name</Th>
+                    <Th>Start Time</Th>
+                    <Th>End Time</Th>
+                    <Th>Duration (in minutes)</Th>
                   </tr>
                 </thead>
                 <tbody>
@@ -175,6 +101,9 @@ const ViewLogs = () => {
                       <Td>{item.timestamp}</Td>
                       <Td>{item.pid}</Td>
                       <Td>{item.name}</Td>
+                      <Td>{item.start_time}</Td>
+                      <Td>{item.end_time}</Td>
+                      <Td>{item.duration_minutes}</Td>
                     </tr>
                   ))}
                 </tbody>
@@ -182,9 +111,9 @@ const ViewLogs = () => {
             ) : (
               <NoData>No tracking data available.</NoData>
             )}
-          </TableContainer>
+          </>
         )}
-      </FormContainer>
+      </TableContainer>
     </Container>
   );
 };

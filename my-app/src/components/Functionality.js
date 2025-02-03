@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Section = styled.section`
@@ -51,20 +51,35 @@ const Button = styled.button`
 `;
 
 function Functionality() {
+  const location = useLocation();
+  const macAddress = location.state?.macAddress; // Get the MAC address from state
+
   return (
     <div>
       <Section id="Functionality">
         <Container>
           <Box>
             <ButtonContainer>
-              <Link to="/check-system-health">
-                <Button>CHECK System Health</Button>
+              <Link to="/view-logs" state={{ macAddress }}>
+                <Button>View Process Details</Button>
               </Link>
-              <Link to="/view-graph">
-                <Button>Graphs</Button>
+              <Link to="/view-network-details" state={{ macAddress }}>
+                <Button>View Network Details</Button>
               </Link>
-              <Link to="/view-logs">
-                <Button>View Logs</Button>
+              <Link to="/view-network-requests" state={{ macAddress }}>
+                <Button>View Network Requests</Button>
+              </Link>
+              <Link to="/view-connected-devices" state={{ macAddress }}>
+                <Button>View Connected Devices</Button>
+              </Link>
+              <Link to="/view-browser-history" state={{ macAddress }}>
+                <Button>View Browser History</Button>
+              </Link>
+              <Link to="/check-system-health" state={{ macAddress }}>
+                <Button>View System Health</Button>
+              </Link>
+              <Link to="/view-graphs" state={{ macAddress }}>
+                <Button>View Graphs</Button>
               </Link>
             </ButtonContainer>
           </Box>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect,useCallback  } from 'react';
-import { useNavigate,useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -10,6 +10,7 @@ const Section = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 2rem;
   padding: 2rem 0;
 `;
 
@@ -96,7 +97,7 @@ function AddSystem() {
       console.error('Error fetching MAC addresses:', error);
     }
   }, [userId]);
-  
+
   useEffect(() => {
     if (userId) {
       fetchMacAddresses();
@@ -113,11 +114,14 @@ function AddSystem() {
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/addMacAddress', {
-        macAddress,
-        systemName: machineName,
-        userId, // Use the userId here
-      });
+      const response = await axios.post(
+        'http://localhost:8000/api/addMacAddress',
+        {
+          macAddress,
+          systemName: machineName,
+          userId, // Use the userId here
+        }
+      );
       setMacList([...macList, response.data.data]);
       setMacAddress('');
       setMachineName('');
@@ -128,7 +132,7 @@ function AddSystem() {
   };
 
   const handleNavigate = (entry) => {
-    navigate('/functionality', { state: entry });
+    navigate('/functionality', { state: { macAddress: entry.macAddress } });
   };
 
   return (
@@ -165,8 +169,12 @@ function AddSystem() {
             <tbody>
               {macList.map((entry) => (
                 <tr key={entry._id}>
-                  <Td onClick={() => handleNavigate(entry)}>{entry.macAddress}</Td>
-                  <Td onClick={() => handleNavigate(entry)}>{entry.systemName}</Td>
+                  <Td onClick={() => handleNavigate(entry)}>
+                    {entry.macAddress}
+                  </Td>
+                  <Td onClick={() => handleNavigate(entry)}>
+                    {entry.systemName}
+                  </Td>
                 </tr>
               ))}
             </tbody>

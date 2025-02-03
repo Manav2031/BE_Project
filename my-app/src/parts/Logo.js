@@ -1,11 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-<<<<<<< HEAD
 import LogoImage from '../assets/logo.png';
-=======
-import LogoImage from '../assets/logo.png'
->>>>>>> 6f3a9bda2f19b3dabe81365e6f56ecc153e501cf
 
 const LogoText = styled.h1`
   font-family: 'Akaya Telivigala', cursive;
