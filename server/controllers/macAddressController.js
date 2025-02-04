@@ -1,3 +1,5 @@
+require('dotenv').config(); // Load environment variables from .env file
+
 const { getMACAddress } = require('../models/macadd');
 const { MongoClient } = require('mongodb');
 const AppUsage = require('../models/appUsage');
@@ -5,8 +7,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 let trackingProcess;
 
-const MONGODB_URI =
-  'mongodb+srv://manav2031:Ma310703@cluster0.8n47utm.mongodb.net/';
+const MONGODB_URI = process.env.MONGO_URL; // Read MongoDB URI from environment variables
 
 exports.checkMACAddress = async (req, res) => {
   const { macAddress } = req.body;

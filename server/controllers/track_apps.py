@@ -16,9 +16,14 @@ from browser_history import get_history
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from dotenv import load_dotenv  # Import the dotenv module
+import os  # Import the os module to access environment variables
+
+# Load environment variables from .env file
+load_dotenv()
 
 # MongoDB connection
-mongo_url = 'mongodb+srv://manav2031:Ma310703@cluster0.8n47utm.mongodb.net/internship_project'
+mongo_url = os.getenv('MONGO_URL')  # Read MongoDB URI from environment variables
 client = MongoClient(mongo_url)
 
 
