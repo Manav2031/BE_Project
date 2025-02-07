@@ -4,6 +4,8 @@ const { getMACAddress } = require('../models/macadd');
 const { MongoClient } = require('mongodb');
 const AppUsage = require('../models/appUsage');
 const path = require('path');
+const exec = require('child_process').exec;
+const os = require('os');
 const { spawn } = require('child_process');
 let trackingProcess;
 
@@ -239,4 +241,29 @@ exports.displayConnectedDevices = async (req, res) => {
     // Close the database connection
     await client.close();
   }
+};
+
+exports.shutdownSystem = async (req, res) => {
+  let shutdownCommand = '';
+
+  // Check the platform and set the appropriate shutdown command
+  if (os.platform() === 'win32') {
+    // Windows shutdown command for both win32 and win64
+    shutdownCommand = 'shutdown -s -t 0';
+  } else if (os.platform() === 'linux' || os.platform() === 'darwin') {
+    // Linux and macOS shutdown command
+    shutdownCommand = 'sudo shutdown -h now';
+  } else {
+    return res.status(400).json({ error: 'Unsupported platform for shutdown' });
+  }
+
+  // Execute the shutdown command
+  exec(shutdownCommand, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error shutting down: ${error}`);
+      return res.status(500).json({ error: 'Failed to shut down the system' });
+    }
+    console.log('System is shutting down...');
+    res.status(200).json({ message: 'System is shutting down' });
+  });
 };

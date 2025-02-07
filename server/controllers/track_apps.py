@@ -381,85 +381,85 @@ def retrieve_application_usage(mac_address):
     print(df.head())  # Debug: Print the first few rows of the DataFrame
     return df
 
-def plot_bar_chart(df):
-    """Plot a vertical bar chart of application usage."""
-    app_usage = df.groupby('name')['duration_minutes'].sum().sort_values(ascending=False)
+# def plot_bar_chart(df):
+#     """Plot a vertical bar chart of application usage."""
+#     app_usage = df.groupby('name')['duration_minutes'].sum().sort_values(ascending=False)
 
-    plt.figure(figsize=(12, 8))
-    ax = app_usage.plot(kind='bar', color='skyblue')
-    plt.xticks(rotation=90, ha='center', fontsize=8)
-    plt.title('Application Usage (Total Minutes)', fontsize=14, pad=20)
-    plt.xlabel('Application Name', fontsize=12)
-    plt.ylabel('Total Usage (Minutes)', fontsize=12)
-    ax.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.tight_layout()
-    plt.show()
+#     plt.figure(figsize=(12, 8))
+#     ax = app_usage.plot(kind='bar', color='skyblue')
+#     plt.xticks(rotation=90, ha='center', fontsize=8)
+#     plt.title('Application Usage (Total Minutes)', fontsize=14, pad=20)
+#     plt.xlabel('Application Name', fontsize=12)
+#     plt.ylabel('Total Usage (Minutes)', fontsize=12)
+#     ax.grid(axis='y', linestyle='--', alpha=0.7)
+#     plt.tight_layout()
+#     plt.show()
 
-def plot_horizontal_bar_chart(df):
-    """Plot a horizontal bar chart of application usage."""
-    app_usage = df.groupby('name')['duration_minutes'].sum().sort_values(ascending=False)
+# def plot_horizontal_bar_chart(df):
+#     """Plot a horizontal bar chart of application usage."""
+#     app_usage = df.groupby('name')['duration_minutes'].sum().sort_values(ascending=False)
 
-    plt.figure(figsize=(10, 12))
-    ax = app_usage.plot(kind='barh', color='lightgreen')
-    plt.yticks(fontsize=8)
-    plt.title('Application Usage (Total Minutes)', fontsize=14, pad=20)
-    plt.xlabel('Total Usage (Minutes)', fontsize=12)
-    plt.ylabel('Application Name', fontsize=12)
-    ax.grid(axis='x', linestyle='--', alpha=0.7)
-    plt.tight_layout()
-    plt.show()
+#     plt.figure(figsize=(10, 12))
+#     ax = app_usage.plot(kind='barh', color='lightgreen')
+#     plt.yticks(fontsize=8)
+#     plt.title('Application Usage (Total Minutes)', fontsize=14, pad=20)
+#     plt.xlabel('Total Usage (Minutes)', fontsize=12)
+#     plt.ylabel('Application Name', fontsize=12)
+#     ax.grid(axis='x', linestyle='--', alpha=0.7)
+#     plt.tight_layout()
+#     plt.show()
 
-def plot_pie_chart(df):
-    """Plot a pie chart of application usage."""
-    app_usage = df.groupby('name')['duration_minutes'].sum().sort_values(ascending=False)
+# def plot_pie_chart(df):
+#     """Plot a pie chart of application usage."""
+#     app_usage = df.groupby('name')['duration_minutes'].sum().sort_values(ascending=False)
 
-    # Limit to top 10 applications for better readability
-    top_apps = app_usage.head(10)
+#     # Limit to top 10 applications for better readability
+#     top_apps = app_usage.head(10)
 
-    plt.figure(figsize=(8, 8))
-    top_apps.plot(kind='pie', autopct='%1.1f%%', startangle=140, fontsize=10, colors=plt.cm.tab20.colors)
-    plt.title('Top 10 Applications by Usage (%)', fontsize=14, pad=20)
-    plt.ylabel('')  # Remove the default 'duration_minutes' label
-    plt.tight_layout()
-    plt.show()
+#     plt.figure(figsize=(8, 8))
+#     top_apps.plot(kind='pie', autopct='%1.1f%%', startangle=140, fontsize=10, colors=plt.cm.tab20.colors)
+#     plt.title('Top 10 Applications by Usage (%)', fontsize=14, pad=20)
+#     plt.ylabel('')  # Remove the default 'duration_minutes' label
+#     plt.tight_layout()
+#     plt.show()
 
-def plot_line_chart(df):
-    """Plot a line chart of application usage over time."""
-    df['timestamp'] = pd.to_datetime(df['timestamp'])  # Convert timestamp to datetime
-    df.set_index('timestamp', inplace=True)  # Set timestamp as the index
+# def plot_line_chart(df):
+#     """Plot a line chart of application usage over time."""
+#     df['timestamp'] = pd.to_datetime(df['timestamp'])  # Convert timestamp to datetime
+#     df.set_index('timestamp', inplace=True)  # Set timestamp as the index
 
-    # Group by application and resample by day
-    app_usage_time_series = df.groupby('name')['duration_minutes'].resample('D').sum().unstack(level=0)
+#     # Group by application and resample by day
+#     app_usage_time_series = df.groupby('name')['duration_minutes'].resample('D').sum().unstack(level=0)
 
-    plt.figure(figsize=(12, 8))
-    for app in app_usage_time_series.columns:
-        plt.plot(app_usage_time_series.index, app_usage_time_series[app], label=app)
+#     plt.figure(figsize=(12, 8))
+#     for app in app_usage_time_series.columns:
+#         plt.plot(app_usage_time_series.index, app_usage_time_series[app], label=app)
 
-    plt.title('Application Usage Over Time', fontsize=14, pad=20)
-    plt.xlabel('Date', fontsize=12)
-    plt.ylabel('Total Usage (Minutes)', fontsize=12)
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=8)  # Place legend outside the plot
-    plt.grid(linestyle='--', alpha=0.7)
-    plt.tight_layout()
-    plt.show()
+#     plt.title('Application Usage Over Time', fontsize=14, pad=20)
+#     plt.xlabel('Date', fontsize=12)
+#     plt.ylabel('Total Usage (Minutes)', fontsize=12)
+#     plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=8)  # Place legend outside the plot
+#     plt.grid(linestyle='--', alpha=0.7)
+#     plt.tight_layout()
+#     plt.show()
 
-def plot_stacked_area_chart(df):
-    """Plot a stacked area chart of application usage over time."""
-    df['timestamp'] = pd.to_datetime(df['timestamp'])  # Convert timestamp to datetime
-    df.set_index('timestamp', inplace=True)  # Set timestamp as the index
+# def plot_stacked_area_chart(df):
+#     """Plot a stacked area chart of application usage over time."""
+#     df['timestamp'] = pd.to_datetime(df['timestamp'])  # Convert timestamp to datetime
+#     df.set_index('timestamp', inplace=True)  # Set timestamp as the index
 
-    # Group by application and resample by day
-    app_usage_time_series = df.groupby('name')['duration_minutes'].resample('D').sum().unstack(level=0)
+#     # Group by application and resample by day
+#     app_usage_time_series = df.groupby('name')['duration_minutes'].resample('D').sum().unstack(level=0)
 
-    plt.figure(figsize=(12, 8))
-    plt.stackplot(app_usage_time_series.index, app_usage_time_series.T, labels=app_usage_time_series.columns, colors=plt.cm.tab20.colors)
-    plt.title('Cumulative Application Usage Over Time', fontsize=14, pad=20)
-    plt.xlabel('Date', fontsize=12)
-    plt.ylabel('Total Usage (Minutes)', fontsize=12)
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=8)  # Place legend outside the plot
-    plt.grid(linestyle='--', alpha=0.7)
-    plt.tight_layout()
-    plt.show()
+#     plt.figure(figsize=(12, 8))
+#     plt.stackplot(app_usage_time_series.index, app_usage_time_series.T, labels=app_usage_time_series.columns, colors=plt.cm.tab20.colors)
+#     plt.title('Cumulative Application Usage Over Time', fontsize=14, pad=20)
+#     plt.xlabel('Date', fontsize=12)
+#     plt.ylabel('Total Usage (Minutes)', fontsize=12)
+#     plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=8)  # Place legend outside the plot
+#     plt.grid(linestyle='--', alpha=0.7)
+#     plt.tight_layout()
+#     plt.show()
 
 def collect_system_health_data():
     """Collect system health data like CPU, memory, and disk usage."""
@@ -568,24 +568,24 @@ def retrieve_browser_history(mac_address):
     db = client[mac_address]
     collection = db[f'browser_history_{mac_address}']
 
-    # Clear any existing browser history data when the script starts
-    try:
-        collection.delete_many({})  # Delete all documents from the collection
-    except Exception:
-        return
+    print("Starting browser history retrieval...")
 
     # Get the browser history
     try:
         history = get_history()  # Assuming get_history is defined elsewhere
-    except Exception:
+        print("Retrieved browser history.")
+    except Exception as e:
+        print(f"Error retrieving browser history: {e}")
         return
 
     if not history:
+        print("No browser history found.")
         return
 
     history_data = history.histories
 
     if not history_data:
+        print("No browser history data found.")
         return
 
     entries = []
@@ -615,19 +615,27 @@ def retrieve_browser_history(mac_address):
                     'url': url,
                     'title': title
                 }
+                print(f"Adding entry: {entry_data}")
                 entries.append(entry_data)
+
+    # Sort entries by timestamp in decreasing order
+    entries.sort(key=lambda x: x['timestamp'], reverse=True)
 
     # Insert only valid entries into the collection
     if entries:
         try:
             result = collection.insert_many(entries)
-        except Exception:
+            print(f"Inserted {len(entries)} entries into the database.")
+        except Exception as e:
+            print(f"Error inserting entries into the database: {e}")
             return
 
     # Check if collection exists after insertion
     if collection.count_documents({}) > 0:
+        print("Browser history data successfully stored.")
         return
     else:
+        print("No browser history data stored.")
         return
 
 
@@ -654,7 +662,7 @@ if __name__ == "__main__":
     def monitor_network_details():
         while True:
             collect_network_details(mac_address)
-            time.sleep(10)  # Check every 5 minutes
+            time.sleep(300)  # Check every 5 minutes
 
     def monitor_connected_devices():
         while True:
@@ -669,12 +677,12 @@ if __name__ == "__main__":
     def monitor_machine_learning():
         while True:
             monitor_with_ml(mac_address)
-            time.sleep(10)
+            time.sleep(300)
 
     def monitor_network_requests():
         while True:
             start_network_capture(mac_address)
-            time.sleep(10)
+            time.sleep(300)
 
     def monitor_browser_history():
         while True:
@@ -684,26 +692,26 @@ if __name__ == "__main__":
     def monitor_all_browsers():
         while True:
             close_all_browsers()
-            time.sleep(10)
+            time.sleep(60)
 
-    def plot_graphs():
-        df = retrieve_application_usage(mac_address)
-        plot_bar_chart(df)
-        plot_horizontal_bar_chart(df)
-        plot_pie_chart(df)
-        plot_line_chart(df)
-        plot_stacked_area_chart(df)
-        time.sleep(10)  # Check every 5 minutes
+    # def plot_graphs():
+    #     df = retrieve_application_usage(mac_address)
+    #     plot_bar_chart(df)
+    #     plot_horizontal_bar_chart(df)
+    #     plot_pie_chart(df)
+    #     plot_line_chart(df)
+    #     plot_stacked_area_chart(df)
+    #     time.sleep(10)  # Check every 5 minutes
 
     # Start threads for monitoring
+    threading.Thread(target=monitor_browser_history, daemon=True).start()
     threading.Thread(target=monitor_network_details, daemon=True).start()
     threading.Thread(target=monitor_connected_devices, daemon=True).start()
     threading.Thread(target=monitor_application_usage, daemon=True).start()
     threading.Thread(target=monitor_machine_learning, daemon=True).start()
     threading.Thread(target=monitor_network_requests, daemon=True).start()
-    threading.Thread(target=monitor_browser_history, daemon=True).start()
     threading.Thread(target=monitor_all_browsers, daemon=True).start()
-    threading.Thread(target=plot_graphs, daemon=True).start()
+    # threading.Thread(target=plot_graphs, daemon=True).start()
 
     # Set up file system monitoring
     path_to_watch = "."  # Monitor the current directory

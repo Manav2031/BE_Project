@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
-import useSound from 'use-sound';
 import alertSound from '../sounds/alert.mp3'; // Add an alert sound file
 
 const Container = styled.div`
@@ -54,7 +53,9 @@ const ConnectedDevices = () => {
   const [penDriveDetected, setPenDriveDetected] = useState(false);
   const location = useLocation();
   const macAddress = location.state?.macAddress; // Get MAC address from state
-  const [playAlert] = useSound(alertSound); // Sound for pen drive detection
+
+  // Create an Audio object
+  const audio = new Audio(alertSound);
 
   // Function to fetch connected devices
   const fetchConnectedDevices = async () => {
@@ -66,12 +67,32 @@ const ConnectedDevices = () => {
       );
       setDevices(response.data);
 
-      if (response.data.pen_drive_detected) {
-        setPenDriveDetected(true);
-        playAlert(); // Play sound
-        toast.warning('Pen drive detected!', {
+      let isPenDriveDetected = false;
+      response.data.forEach((device) => {
+        if (device['Device Type'] === 'Secondary Storage') {
+          isPenDriveDetected = true;
+          if (!penDriveDetected) {
+            audio.play();
+            toast.error('Pen drive detected!', {
+              position: 'top-center',
+              autoClose: 10000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+            // Send request to shutdown system
+            // axios.post('http://localhost:8000/api/shutdown-system');
+          }
+        }
+      });
+
+      if (!isPenDriveDetected && penDriveDetected) {
+        audio.pause();
+        audio.currentTime = 0;
+        toast.info('Pen drive removed!', {
           position: 'top-center',
-          autoClose: 5000,
+          autoClose: 10000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -79,6 +100,7 @@ const ConnectedDevices = () => {
         });
       }
 
+      setPenDriveDetected(isPenDriveDetected); // Update the state based on detection
       setIsLoading(false);
     } catch (error) {
       console.error(
@@ -94,7 +116,7 @@ const ConnectedDevices = () => {
     fetchConnectedDevices(); // Fetch data immediately on component mount
     const interval = setInterval(fetchConnectedDevices, 5000); // Fetch data every 5 seconds
     return () => clearInterval(interval); // Cleanup interval on component unmount
-  }, [macAddress]);
+  }, [macAddress, penDriveDetected]); // Track penDriveDetected state
 
   return (
     <Container>
