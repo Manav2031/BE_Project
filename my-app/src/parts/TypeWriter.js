@@ -46,7 +46,7 @@ const TypeWriterText = () => {
         }
   onInit={(typewriter) => {
     typewriter
-    .typeString('<span class="text-1">Time Tracker. </span>')
+    .typeString('<span class="text-1">Activity Tracker. </span>')
     .pauseFor(2000)
     .deleteAll()
     .typeString('<span class="text-2">Know where your time goes. </span>')

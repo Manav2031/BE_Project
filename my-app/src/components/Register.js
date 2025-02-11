@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { FaUser, FaLock, FaIdBadge } from 'react-icons/fa'; 
+import { AiOutlineLogin } from 'react-icons/ai';
 
 const Container = styled.div`
   width: 75%;
@@ -10,6 +12,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  text-decoration: none;
 `;
 
 function UserRegistration() {
@@ -33,21 +36,19 @@ function UserRegistration() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    // Frontend validation
+
     if (!username || !password || !labId) {
       setUserNotification("All fields are required.");
       return;
     }
-  
+
     try {
       const response = await axios.post('http://localhost:8000/api/register', {
         username,
         password,
         labId,
       });
-  
-      // Check if registration was successful
+
       if (response.data && response.data._id) {
         setUserNotification("Registration successful! Redirecting to login...");
         setTimeout(() => navigate('/login'), 2000);
@@ -59,7 +60,6 @@ function UserRegistration() {
       setUserNotification(error.response?.data?.message || "An error occurred during registration.");
     }
   };
-  
 
   return (
     <Container>
@@ -67,7 +67,7 @@ function UserRegistration() {
         <h2>Register User</h2>
         <form onSubmit={handleSubmit}>
           <div>
-            <label>Username:</label>
+            <label><FaUser /> Username:</label>
             <input
               type="text"
               value={username}
@@ -76,7 +76,7 @@ function UserRegistration() {
             />
           </div>
           <div>
-            <label>Password:</label>
+            <label><FaLock /> Password:</label>
             <input
               type="password"
               value={password}
@@ -85,7 +85,7 @@ function UserRegistration() {
             />
           </div>
           <div>
-            <label>Lab ID:</label>
+            <label><FaIdBadge /> Lab ID:</label>
             <input
               type="text"
               value={labId}
@@ -93,9 +93,10 @@ function UserRegistration() {
               required
             />
           </div>
-          <button type="submit">Register</button>
+          <button type="submit"> <AiOutlineLogin /> Register</button>
           {userNotification && <p>{userNotification}</p>}
         </form>
+        <p>Already have an account? <a href="/login" style={{ textDecoration: 'none' }}>Log in</a></p>
       </div>
     </Container>
   );

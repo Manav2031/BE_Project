@@ -11,9 +11,8 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-top:100px;
-  margin-left: 30px;
-  margin-right: 30px;
+  justify-content: center;
+  align-items: center;
   
 }
 
@@ -38,18 +37,20 @@ input[type="password"] {
 
 button {
   display: block;
+  font-size: 1.2rem;
+  font-weight: bold;
   width: 100%;
   padding: 10px 20px;
   margin: 10px auto;
   cursor: pointer;
-  background-color: #007bff;
+  background-color: #968df0;
   color: #fff;
   border: none;
   border-radius: 5px;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color:  #500073;
 }
 
 ul {

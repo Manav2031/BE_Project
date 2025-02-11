@@ -4,23 +4,23 @@ import styled from 'styled-components';
 import axios from 'axios';
 
 const Section = styled.section`
-  min-height: ${(props) => `calc(100vh - ${props.theme.navHeight || '10vh'})`};
+  min-height: 80vh;
   width: 100vw;
   background-color: ${(props) => props.theme.body || '#f4f4f4'};
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
   padding: 2rem 0;
 `;
 
 const FormContainer = styled.div`
   width: 50%;
   margin-bottom: 2rem;
+  margin-top: 5rem;
   padding: 2rem;
   border-radius: 8px;
-  background-color: ${(props) => props.theme.primary || '#007BFF'};
-  color: ${(props) => props.theme.body || '#fff'};
+  background-color: #968df0; /* Soft Purple */
+  color: #fff;
 `;
 
 const ListContainer = styled.div`
@@ -28,8 +28,8 @@ const ListContainer = styled.div`
   margin-top: 2rem;
   padding: 2rem;
   border-radius: 8px;
-  background-color: ${(props) => props.theme.secondary || '#0056b3'};
-  color: ${(props) => props.theme.text || '#fff'};
+  background-color: #500073; /* Deep Purple */
+  color: #fff;
 `;
 
 const Input = styled.input`
@@ -37,21 +37,21 @@ const Input = styled.input`
   padding: 0.8rem;
   margin-bottom: 1rem;
   font-size: 1rem;
-  border: 1px solid ${(props) => props.theme.border || '#ccc'};
+  border: 1px solid #ccc;
   border-radius: 5px;
 `;
 
 const Button = styled.button`
   padding: 0.8rem 1.5rem;
   font-size: 1.2rem;
-  color: ${(props) => props.theme.body || '#fff'};
-  background-color: ${(props) => props.theme.primary || '#007BFF'};
+  color: #fff;
+  background-color: #968df0; /* Soft Purple */
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
   &:hover {
-    background-color: ${(props) => props.theme.secondary || '#0056b3'};
+    background-color: #683089; /* Slightly Lighter Deep Purple */
   }
 `;
 
@@ -62,19 +62,19 @@ const Table = styled.table`
 `;
 
 const Th = styled.th`
-  border: 1px solid ${(props) => props.theme.border || '#ccc'};
+  border: 1px solid #ccc;
   padding: 1rem;
-  background-color: ${(props) => props.theme.body || '#333'};
-  color: ${(props) => props.theme.text || '#fff'};
+  background-color: #333;
+  color: #fff;
 `;
 
 const Td = styled.td`
-  border: 1px solid ${(props) => props.theme.border || '#ccc'};
+  border: 1px solid #ccc;
   padding: 1rem;
   text-align: center;
   cursor: pointer;
   &:hover {
-    background-color: ${(props) => props.theme.hover || '#ddd'};
+    background-color: #ddd;
   }
 `;
 
@@ -87,7 +87,7 @@ function AddSystem() {
   const { userId } = location.state || {};
 
   const fetchMacAddresses = useCallback(async () => {
-    if (!userId) return; // Ensure userId exists
+    if (!userId) return;
     try {
       const response = await axios.get(
         `http://localhost:8000/api/getAllMacAddresses?userId=${userId}`
@@ -102,7 +102,6 @@ function AddSystem() {
     if (userId) {
       fetchMacAddresses();
     } else {
-      // Redirect to login if no userId is found
       navigate('/');
     }
   }, [userId, fetchMacAddresses, navigate]);
@@ -112,15 +111,10 @@ function AddSystem() {
       alert('Please enter both MAC Address and Machine Name');
       return;
     }
-
     try {
       const response = await axios.post(
         'http://localhost:8000/api/addMacAddress',
-        {
-          macAddress,
-          systemName: machineName,
-          userId, // Use the userId here
-        }
+        { macAddress, systemName: machineName, userId }
       );
       setMacList([...macList, response.data.data]);
       setMacAddress('');
@@ -153,7 +147,6 @@ function AddSystem() {
         />
         <Button onClick={handleAddMac}>Add</Button>
       </FormContainer>
-
       <ListContainer>
         <h2>MAC Address List</h2>
         {macList.length === 0 ? (

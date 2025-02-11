@@ -2,8 +2,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import Navigation from '../src/parts/Navigation.js';
 import Admin from './components/Admin';
-import Footer from './components/Footer.js';
+import Footer from '../src/parts/Footer.js';
 import Home from './components/Home';
 import Team from './components/Team.js';
 import Documentation from './components/Documentation.js';
@@ -23,6 +24,7 @@ import ViewGraphs from './components/ViewGraphs.js';
 function App() {
   return (
     <Router>
+      <Navigation></Navigation>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Admin" element={<Admin />} />
