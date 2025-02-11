@@ -3,10 +3,11 @@ import styled from 'styled-components';
 
 const FooterContainer = styled.footer`
   text-align: center;
+  position: fixed;
   padding-top: 0;
   background-color: #968df0;
   color: black;
-  padding:20px;
+  padding: 20px;
   bottom: 0;
   width: 100%;
 `;

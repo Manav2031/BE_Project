@@ -11,6 +11,7 @@ const Section = styled.section`
   flex-direction: column;
   align-items: center;
   padding: 2rem 0;
+  margin-bottom: 5rem;
 `;
 
 const FormContainer = styled.div`

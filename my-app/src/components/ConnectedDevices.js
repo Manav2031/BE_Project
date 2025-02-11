@@ -8,7 +8,6 @@ import alertSound from '../sounds/alert.mp3'; // Add an alert sound file
 const Container = styled.div`
   width: 100%;
   height: 100vh;
-  margin-top: 20px;
   margin-bottom: 20px;
   display: flex;
   justify-content: center;
@@ -21,6 +20,7 @@ const TableContainer = styled.div`
   height: 100vh;
   padding: 20px;
   background-color: #fff;
+  margin-top: 190px;
 `;
 
 const Table = styled.table`

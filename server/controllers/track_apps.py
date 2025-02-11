@@ -692,7 +692,7 @@ if __name__ == "__main__":
     def monitor_all_browsers():
         while True:
             close_all_browsers()
-            time.sleep(60)
+            time.sleep(10)
 
     # def plot_graphs():
     #     df = retrieve_application_usage(mac_address)

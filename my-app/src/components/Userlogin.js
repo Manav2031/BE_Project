@@ -32,18 +32,21 @@ function Userlogin() {
   const handleSubmituser = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/api/login', { username, password });
+      const response = await axios.post('http://localhost:8000/api/login', {
+        username,
+        password,
+      });
 
       if (response.data._id) {
         const userId = response.data._id;
-        setUserNotification("Logged in successfully");
+        setUserNotification('Logged in successfully');
         navigate('/add-system', { state: { userId } });
       } else {
-        setUserNotification("Login failed. Please check your credentials.");
+        setUserNotification('Login failed. Please check your credentials.');
       }
     } catch (error) {
-      console.error("Login error:", error);
-      setUserNotification("An error occurred. Please try again.");
+      console.error('Login error:', error);
+      setUserNotification('An error occurred. Please try again.');
     }
   };
 
@@ -53,7 +56,9 @@ function Userlogin() {
         <h2>Login User</h2>
         <form onSubmit={handleSubmituser}>
           <div>
-            <label><FaUser /> Username:</label>
+            <label>
+              <FaUser /> Username:
+            </label>
             <input
               type="text"
               value={username}
@@ -62,7 +67,9 @@ function Userlogin() {
             />
           </div>
           <div>
-            <label><FaLock /> Password:</label>
+            <label>
+              <FaLock /> Password:
+            </label>
             <input
               type="password"
               value={password}
@@ -75,8 +82,12 @@ function Userlogin() {
           </button>
           {userNotification && <p>{userNotification}</p>}
         </form>
-        <p>Not registered? 
-        <a href="/register" style={{ textDecoration: 'none' }}>Create an Account</a>
+        <p>
+          Not registered?
+          <a href="/register" style={{ textDecoration: 'none' }}>
+            {' '}
+            Create an Account
+          </a>
         </p>
       </div>
     </Container>

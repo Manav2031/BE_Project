@@ -74,14 +74,14 @@ const Info = styled.p`
 function Team() {
   const teamMembers = [
     {
-      name: 'Shruit Maliye',
-      image: 'https://via.placeholder.com/100',
-      info: 'Frontend Developer with expertise in React and UI/UX design.',
-    },
-    {
       name: 'Rutwik Malav',
       image: 'https://via.placeholder.com/100',
       info: 'Backend Developer focusing on Node.js and database management.',
+    },
+    {
+      name: 'Shruti Maliye',
+      image: 'https://via.placeholder.com/100',
+      info: 'Frontend Developer with expertise in React and UI/UX design.',
     },
     {
       name: 'Manav Mehta',
@@ -92,7 +92,7 @@ function Team() {
       name: 'Nikita More',
       image: 'https://via.placeholder.com/100',
       info: 'Full-Stack Developer experienced in building scalable web apps.',
-    }
+    },
   ];
 
   return (
@@ -101,7 +101,7 @@ function Team() {
       <Container>
         {teamMembers.map((member, index) => (
           <Cube key={index}>
-            <Image src={user} alt="Logo"  />
+            <Image src={user} alt="Logo" />
             <Name>{member.name}</Name>
             <Info>{member.info}</Info>
           </Cube>
