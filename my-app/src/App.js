@@ -20,6 +20,7 @@ import NetworkRequests from './components/NetworkRequests.js';
 import AddSystem from './components/AddSystem';
 import ViewLogs from './components/ViewLogs';
 import ViewGraphs from './components/ViewGraphs.js';
+import CheatingDevices from './components/CheatingDevices.js';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route path="/view-connected-devices" element={<ConnectedDevices />} />
         <Route path="/view-network-details" element={<NetworkDetails />} />
         <Route path="/view-network-requests" element={<NetworkRequests />} />
+        <Route path="/view-cheating-devices" element={<CheatingDevices />} />
         <Route path="/add-system" element={<AddSystem />} />
         <Route path="/view-logs" element={<ViewLogs />} />
         <Route path="/view-graphs" element={<ViewGraphs />} />

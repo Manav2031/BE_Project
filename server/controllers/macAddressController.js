@@ -243,6 +243,30 @@ exports.displayConnectedDevices = async (req, res) => {
   }
 };
 
+exports.displayCheatingDevices = async (req, res) => {
+  const client = new MongoClient(MONGODB_URI);
+  try {
+    await client.connect();
+
+    // Connect to the cheating_devices database
+    const database = client.db('cheating_devices');
+
+    // Access the cheating_devices collection
+    const collection = database.collection('cheating_devices');
+
+    // Fetch data
+    const data = await collection.find().toArray();
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    // Close the database connection
+    await client.close();
+  }
+};
+
 exports.shutdownSystem = async (req, res) => {
   let shutdownCommand = '';
 

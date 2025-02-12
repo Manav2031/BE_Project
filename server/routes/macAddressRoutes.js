@@ -23,5 +23,9 @@ router.post(
   macAddressController.displayConnectedDevices
 );
 router.post('/check-system-health', macAddressController.checkSystemHealth);
+router.get(
+  '/display-cheating-devices',
+  macAddressController.displayCheatingDevices
+);
 router.post('/shutdown-system', macAddressController.shutdownSystem);
 module.exports = router;

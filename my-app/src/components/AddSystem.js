@@ -56,6 +56,22 @@ const Button = styled.button`
   }
 `;
 
+const CheatButton = styled.button`
+  padding: 0.8rem 1.5rem;
+  margin-top: 2rem;
+  width: 50%;
+  font-size: 1.2rem;
+  color: #fff;
+  background-color: #968df0; /* Soft Purple */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: #683089; /* Slightly Lighter Deep Purple */
+  }
+`;
+
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -130,6 +146,10 @@ function AddSystem() {
     navigate('/functionality', { state: { macAddress: entry.macAddress } });
   };
 
+  const handleCheatingDevices = () => {
+    navigate('/view-cheating-devices');
+  };
+
   return (
     <Section>
       <FormContainer>
@@ -175,6 +195,10 @@ function AddSystem() {
           </Table>
         )}
       </ListContainer>
+      <CheatButton onClick={handleCheatingDevices}>
+        {' '}
+        Display Cheating Devices{' '}
+      </CheatButton>
     </Section>
   );
 }

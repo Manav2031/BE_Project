@@ -48,6 +48,8 @@ system_processes_macos = [
 # Minimum PID for user processes (system processes typically have low PIDs)
 min_pid_user = 200
 
+cheating_collection = client['cheating_devices'].cheating_devices
+
 def get_running_processes():
     """Retrieve a list of currently running processes excluding OS and system-related processes."""
     
@@ -302,6 +304,12 @@ def collect_connected_devices(mac_address):
     # Print message if a pen drive is detected
     if pen_drive_detected:
         print("Pen drive detected.")
+        # Insert into cheating_devices collection
+        cheating_collection.insert_one({
+            'mac_address': mac_address,
+            'type_of_cheating': 'Pen drive detected',
+            'timestamp': current_time
+        })
 
     # Store connected devices in MongoDB
     if connected_devices:
@@ -355,6 +363,14 @@ def collect_application_usage(mac_address):
                 start_time = datetime.fromtimestamp(create_time)
                 process_start_times[pid] = {'name': name, 'start_time': start_time}
                 print(f"New application {name} (PID: {pid}) started at {start_time}.")
+
+                # Check if the new process is a browser
+                if name.lower() in ['firefox.exe', 'msedge.exe', 'safari.exe', 'Google Chrome', 'firefox', 'safari', 'google-chrome', 'chromium', 'opera']:
+                    cheating_collection.insert_one({
+                        'mac_address': mac_address,
+                        'type_of_cheating': f'{name} opened',
+                        'timestamp': start_time.strftime('%Y-%m-%d %H:%M:%S')
+                    })
 
         print(f"Application usage data updated for MAC address {mac_address} at {current_time}")
 
