@@ -19,7 +19,7 @@ import NetworkDetails from './components/NetworkDetails.js';
 import NetworkRequests from './components/NetworkRequests.js';
 import AddSystem from './components/AddSystem';
 import ViewLogs from './components/ViewLogs';
-import ViewGraphs from './components/ViewGraphs.js';
+import PowerBIDashboard from './components/PowerBIDashboard.js';
 import CheatingDevices from './components/CheatingDevices.js';
 
 function App() {
@@ -43,7 +43,7 @@ function App() {
         <Route path="/view-cheating-devices" element={<CheatingDevices />} />
         <Route path="/add-system" element={<AddSystem />} />
         <Route path="/view-logs" element={<ViewLogs />} />
-        <Route path="/view-graphs" element={<ViewGraphs />} />
+        <Route path="/view-graphs" element={<PowerBIDashboard />} />
       </Routes>
       <ToastContainer />
       <Footer />
