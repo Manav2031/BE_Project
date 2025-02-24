@@ -150,6 +150,10 @@ function AddSystem() {
     navigate('/view-cheating-devices');
   };
 
+  const handleCheatingDevicesGraphs = () => {
+    navigate('/view-cheating-devices-graphs');
+  };
+
   return (
     <Section>
       <FormContainer>
@@ -198,6 +202,10 @@ function AddSystem() {
       <CheatButton onClick={handleCheatingDevices}>
         {' '}
         Display Cheating Devices{' '}
+      </CheatButton>
+      <CheatButton onClick={handleCheatingDevicesGraphs}>
+        {' '}
+        View Graph of Cheating Devices{' '}
       </CheatButton>
     </Section>
   );
