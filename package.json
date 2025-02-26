@@ -11,6 +11,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "electron": "^29.3.0"
+    "electron": "^29.3.0",
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron-builder": "^25.1.8"
   }
 }
