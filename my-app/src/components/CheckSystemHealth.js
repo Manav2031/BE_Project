@@ -56,7 +56,7 @@ const CheckSystemHealth = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'http://localhost:8000/api/check-system-health',
+        'https://electron-eye.onrender.com/api/check-system-health',
         {
           macAddress: macAddress,
         }

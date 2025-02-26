@@ -43,11 +43,14 @@ function UserRegistration() {
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/register', {
-        username,
-        password,
-        labId,
-      });
+      const response = await axios.post(
+        'https://electron-eye.onrender.com/api/register',
+        {
+          username,
+          password,
+          labId,
+        }
+      );
 
       if (response.data && response.data._id) {
         setUserNotification('Registration successful! Redirecting to login...');

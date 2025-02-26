@@ -56,7 +56,7 @@ const ViewLogs = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'http://localhost:8000/api/getTracking',
+        'https://electron-eye.onrender.com/api/getTracking',
         {
           macAddress: macAddress,
         }

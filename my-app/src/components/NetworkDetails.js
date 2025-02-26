@@ -56,7 +56,7 @@ const NetworkDetails = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'http://localhost:8000/api/display-network-details',
+        'https://electron-eye.onrender.com/api/display-network-details',
         {
           macAddress: macAddress,
         }

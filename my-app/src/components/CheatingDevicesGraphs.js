@@ -26,7 +26,7 @@ const CheatingDevicesGraphs = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        'http://localhost:8000/api/display-cheating-devices'
+        'https://electron-eye.onrender.com/api/display-cheating-devices'
       );
       setGraphData(response.data);
     } catch (error) {

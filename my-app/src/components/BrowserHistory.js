@@ -58,7 +58,7 @@ const BrowserHistory = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'http://localhost:8000/api/display-browser-history',
+        'https://electron-eye.onrender.com/api/display-browser-history',
         {
           macAddress: macAddress,
         }

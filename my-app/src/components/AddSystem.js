@@ -107,7 +107,7 @@ function AddSystem() {
     if (!userId) return;
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/getAllMacAddresses?userId=${userId}`
+        `https://electron-eye.onrender.com/api/getAllMacAddresses?userId=${userId}`
       );
       setMacList(response.data);
     } catch (error) {
@@ -130,7 +130,7 @@ function AddSystem() {
     }
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/addMacAddress',
+        'https://electron-eye.onrender.com/api/addMacAddress',
         { macAddress, systemName: machineName, userId }
       );
       setMacList([...macList, response.data.data]);

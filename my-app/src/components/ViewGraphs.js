@@ -46,7 +46,7 @@ const ViewGraphs = () => {
   const fetchProcessData = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/getTracking',
+        'https://electron-eye.onrender.com/api/getTracking',
         {
           macAddress: macAddress,
         }
@@ -67,7 +67,7 @@ const ViewGraphs = () => {
   const fetchDeviceSignalData = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/display-connected-devices',
+        'https://electron-eye.onrender.com/api/display-connected-devices',
         { macAddress: macAddress }
       );
 
@@ -92,7 +92,7 @@ const ViewGraphs = () => {
   const fetchSystemUsageData = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/check-system-health',
+        'https://electron-eye.onrender.com/api/check-system-health',
         {
           macAddress: macAddress,
         }
@@ -113,7 +113,7 @@ const ViewGraphs = () => {
   const fetchNetworkDetailsData = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/display-network-details',
+        'https://electron-eye.onrender.com/api/display-network-details',
         {
           macAddress: macAddress,
         }
@@ -134,7 +134,7 @@ const ViewGraphs = () => {
   const fetchNetworkRequestsData = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/display-network-requests',
+        'https://electron-eye.onrender.com/api/display-network-requests',
         {
           macAddress: macAddress,
         }
@@ -155,7 +155,7 @@ const ViewGraphs = () => {
   const fetchBrowserHistoryData = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/display-browser-history',
+        'https://electron-eye.onrender.com/api/display-browser-history',
         {
           macAddress: macAddress,
         }

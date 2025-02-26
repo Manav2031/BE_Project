@@ -53,7 +53,7 @@ const CheatingDevices = () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        'http://localhost:8000/api/display-cheating-devices'
+        'https://electron-eye.onrender.com/api/display-cheating-devices'
       );
       setTrackStatus(response.data);
       setIsLoading(false);

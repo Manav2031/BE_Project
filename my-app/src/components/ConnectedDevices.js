@@ -62,7 +62,7 @@ const ConnectedDevices = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        'http://localhost:8000/api/display-connected-devices',
+        'https://electron-eye.onrender.com/api/display-connected-devices',
         { macAddress: macAddress }
       );
       setDevices(response.data);
@@ -82,7 +82,7 @@ const ConnectedDevices = () => {
               draggable: true,
             });
             // Send request to shutdown system
-            // axios.post('http://localhost:8000/api/shutdown-system');
+            // axios.post('https://electron-eye.onrender.com/api/shutdown-system');
           }
         }
       });
