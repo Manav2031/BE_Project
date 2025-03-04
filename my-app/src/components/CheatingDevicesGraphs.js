@@ -37,7 +37,7 @@ const CheatingDevicesGraphs = () => {
   // Use useEffect to fetch data periodically
   useEffect(() => {
     fetchData(); // Fetch data immediately on component mount
-    const interval = setInterval(fetchData, 60000); // Fetch data every 5 seconds
+    const interval = setInterval(fetchData, 5000); // Fetch data every 5 seconds
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
