@@ -48,6 +48,19 @@ const CheatingDevices = () => {
   const [trackStatus, setTrackStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Function to filter unique types of cheating
+  const filterUniqueCheatingTypes = (data) => {
+    const uniqueTypesMap = new Map();
+
+    data.forEach((item) => {
+      if (!uniqueTypesMap.has(item.type_of_cheating)) {
+        uniqueTypesMap.set(item.type_of_cheating, item);
+      }
+    });
+
+    return Array.from(uniqueTypesMap.values());
+  };
+
   // Function to fetch tracking data
   const fetchTrackingData = async () => {
     try {
@@ -55,7 +68,9 @@ const CheatingDevices = () => {
       const response = await axios.get(
         'https://electron-eye.onrender.com/api/display-cheating-devices'
       );
-      setTrackStatus(response.data);
+      // Filter data to display unique types of cheating
+      const uniqueCheatingTypes = filterUniqueCheatingTypes(response.data);
+      setTrackStatus(uniqueCheatingTypes);
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching tracking data:', error);

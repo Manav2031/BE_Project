@@ -77,6 +77,29 @@ def get_running_processes():
     
     return running_processes
 
+
+def detect_git_clone(mac_address):
+    """Detect if any process is executing the 'git clone' command."""
+    while True:
+        for process in psutil.process_iter(['pid', 'name']):
+            try:
+                # Check if the process is 'git' and has 'clone' in its command-line arguments
+                if process.info['name'] in ['git.exe','git']:
+                    print(f"Cheating detected! Git clone command executed by PID {process.info['pid']}.")
+                    
+                    # Insert into cheating_devices collection
+                    cheating_collection.insert_one({
+                        'mac_address': mac_address,  # Replace with actual MAC address if available
+                        'type_of_cheating': 'Git clone command detected',
+                        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    })
+
+                    # Optionally, terminate the process
+                    process.terminate()
+                    print(f"Terminated process with PID {process.info['pid']}.")
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+
 def play_high_volume_sound():
     """Play a high volume sound when a browser is closed."""
     frequency = 2500  # Set the frequency of the sound (in Hz)
@@ -629,6 +652,11 @@ if __name__ == "__main__":
             close_all_browsers()
             time.sleep(10)
 
+    def monitor_git_clone():
+        while True:
+            detect_git_clone(mac_address)
+            time.sleep(5)  # Check every 5 seconds
+
     # Start threads for monitoring
     threading.Thread(target=monitor_browser_history, daemon=True).start()
     threading.Thread(target=monitor_network_details, daemon=True).start()
@@ -637,6 +665,7 @@ if __name__ == "__main__":
     threading.Thread(target=monitor_machine_learning, daemon=True).start()
     threading.Thread(target=monitor_network_requests, daemon=True).start()
     threading.Thread(target=monitor_all_browsers, daemon=True).start()
+    threading.Thread(target=monitor_git_clone, daemon=True).start()
 
     # Set up file system monitoring
     path_to_watch = "."  # Monitor the current directory
