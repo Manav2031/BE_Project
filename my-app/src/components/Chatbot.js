@@ -42,7 +42,8 @@ const ChatHeader = styled.div`
 `;
 
 const HeaderTitle = styled.span`
-  flex-grow: 1; /* Ensure the title takes more space */
+  //   flex-grow: 1; /* Ensure the title takes more space */
+  text-align: center;
   font-size: 16px;
   font-weight: bold;
 `;
@@ -97,7 +98,7 @@ const InputField = styled.input`
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
-  width: 100%; /* Full width */
+  width: 80%; /* Full width */
   color: black; /* Change text color to black */
 `;
 
