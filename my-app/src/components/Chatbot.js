@@ -94,11 +94,12 @@ const ChatInput = styled.div`
 `;
 
 const InputField = styled.input`
-  padding: 10px 0;
+  padding: 10px;
+  margin: 10px 0;
+  width: calc(100% - 20px);
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
-  width: 80%; /* Full width */
   color: black; /* Change text color to black */
 `;
 
