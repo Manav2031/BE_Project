@@ -42,7 +42,7 @@ const ChatHeader = styled.div`
 `;
 
 const HeaderTitle = styled.span`
-  width: 300px;
+  width: 8000px;
   text-align: center;
   font-size: 16px;
   font-weight: bold;
