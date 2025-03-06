@@ -37,7 +37,7 @@ const ChatHeader = styled.div`
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 `;
 
@@ -94,13 +94,13 @@ const ChatInput = styled.div`
 `;
 
 const InputField = styled.input`
-  padding: 10px;
-  margin: 10px 0;
-  width: calc(100% - 20px);
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-  color: black; /* Change text color to black */
+  padding: 10px !important;
+  margin: 10px 0 !important;
+  width: calc(100% - 20px) !important;
+  border: 1px solid #ccc !important;
+  border-radius: 5px !important;
+  font-size: 14px !important;
+  color: black !important; /* Change text color to black */
 `;
 
 const SendButton = styled.button`
