@@ -1,8 +1,9 @@
-import { React } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import TypeWriter from '../parts/TypeWriter';
 import CoverVideo from '../parts/CoverVideo';
+import Chatbot from '../components/Chatbot';
 
 const Section = styled.section`
   min-height: 80vh;
@@ -24,7 +25,7 @@ const Box = styled.div`
   width: 50%;
   height: 100%;
   display: flex;
-  margin-top:50px;
+  margin-top: 50px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -57,6 +58,13 @@ const StyledButton = styled.button`
 `;
 
 function Home() {
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false); // State to manage chatbot visibility
+
+  // Function to toggle chatbot visibility
+  const toggleChatbot = () => {
+    setIsChatbotOpen(!isChatbotOpen);
+  };
+
   return (
     <div>
       <Section id="home">
@@ -71,6 +79,8 @@ function Home() {
               <StyledLink to="/Login">
                 <StyledButton>Login</StyledButton>
               </StyledLink>
+              {/* Chat with Me Button */}
+              <StyledButton onClick={toggleChatbot}>Chat with Me</StyledButton>
             </ButtonContainer>
           </Box>
           <Box>
@@ -78,6 +88,9 @@ function Home() {
           </Box>
         </Container>
       </Section>
+
+      {/* Render the Chatbot component if isChatbotOpen is true */}
+      {isChatbotOpen && <Chatbot onClose={toggleChatbot} />}
     </div>
   );
 }

@@ -1,0 +1,20 @@
+{
+    "questions": [
+      {
+        "question": "What is your name?",
+        "answer": "I am a chatbot."
+      },
+      {
+        "question": "How are you?",
+        "answer": "I'm just a bot, but I'm doing great!"
+      },
+      {
+        "question": "What can you do?",
+        "answer": "I can answer your questions based on my knowledge."
+      },
+      {
+        "question": "Who created you?",
+        "answer": "I was created by a developer using React.js."
+      }
+    ]
+  }
