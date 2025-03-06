@@ -19,9 +19,9 @@ const ChatbotContainer = styled.div`
   position: fixed;
   top: 50%;
   right: 20px;
-  transform: translateY(-50%); /* Center vertically */
-  width: 350px; /* Increased width */
-  height: 500px; /* Increased height */
+  transform: translateY(-50%);
+  width: 350px;
+  height: 500px;
   background-color: #f1f1f1;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -41,13 +41,19 @@ const ChatHeader = styled.div`
   align-items: center;
 `;
 
+const HeaderTitle = styled.span`
+  flex-grow: 1; /* Ensure the title takes more space */
+  font-size: 16px;
+  font-weight: bold;
+`;
+
 const CloseButton = styled.button`
   background: none;
   border: none;
   color: white;
-  font-size: 16px; /* Smaller size */
+  font-size: 14px; /* Reduce size */
   cursor: pointer;
-  padding: 5px;
+  padding: 2px; /* Less padding */
 `;
 
 const ChatBody = styled.div`
@@ -81,34 +87,36 @@ const Message = styled.div`
 
 const ChatInput = styled.div`
   display: flex;
+  flex-direction: column; /* Stack input and button */
   padding: 10px;
   border-top: 1px solid #ccc;
 `;
 
 const InputField = styled.input`
-  flex: 1;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
+  width: 100%; /* Full width */
+  color: black; /* Change text color to black */
 `;
 
 const SendButton = styled.button`
-  margin-left: 10px;
-  padding: 8px 12px; /* Smaller size */
+  margin-top: 10px; /* Add space between input and button */
+  padding: 10px 0; /* Full width button */
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px;
+  width: 100%;
 `;
 
 function Chatbot({ onClose }) {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
 
-  // Function to call Gemini API
   const fetchGeminiResponse = async (query) => {
     try {
       const result = await model.generateContent(query);
@@ -122,22 +130,18 @@ function Chatbot({ onClose }) {
   const handleSendMessage = async () => {
     if (userInput.trim() === '') return;
 
-    // Add user message to chat
     const userMessage = { text: userInput, sender: 'user' };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-    // Find the closest matching question using Fuse.js
     const searchResult = fuse.search(userInput);
 
     let botMessage;
     if (searchResult.length > 0) {
-      // If a match is found in JSON, use the corresponding answer
       botMessage = {
         text: searchResult[0].item.answer,
         sender: 'bot',
       };
     } else {
-      // If no match is found, call the Gemini API
       const geminiResponse = await fetchGeminiResponse(userInput);
       botMessage = {
         text: geminiResponse,
@@ -145,17 +149,14 @@ function Chatbot({ onClose }) {
       };
     }
 
-    // Add bot message to chat
     setMessages((prevMessages) => [...prevMessages, botMessage]);
-
-    // Clear input
     setUserInput('');
   };
 
   return (
     <ChatbotContainer>
       <ChatHeader>
-        <span>Chatbot</span>
+        <HeaderTitle>Chatbot</HeaderTitle>
         <CloseButton onClick={onClose}>×</CloseButton>
       </ChatHeader>
       <ChatBody>
