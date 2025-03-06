@@ -79,6 +79,7 @@ function Home() {
               <StyledLink to="/Login">
                 <StyledButton>Login</StyledButton>
               </StyledLink>
+              <br />
               {/* Chat with Me Button */}
               <StyledButton onClick={toggleChatbot}>Chat with Me</StyledButton>
             </ButtonContainer>

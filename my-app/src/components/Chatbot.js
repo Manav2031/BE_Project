@@ -17,7 +17,7 @@ const fuse = new Fuse(data.questions, {
 
 const ChatbotContainer = styled.div`
   position: fixed;
-  bottom: 20px;
+  top: 20px;
   right: 20px;
   width: 300px;
   height: 400px;
