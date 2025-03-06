@@ -13,8 +13,25 @@
         "answer": "I can answer your questions based on my knowledge."
       },
       {
-        "question": "Who created you?",
-        "answer": "I was created by a developer using React.js."
+        "question": "What are the features of Electron Eye?",
+        "answer": "The features of Electron Eye are Centralized Data Management, Predictive Maintenance, Advanced Visualization, Enhanced Security, Proactive Maintenance, and Optimized Resource Allocation."
+      },
+      {
+        "question": "What is the tech stack of Electron Eye?",
+        "answer": "MongoDB, Express.js, React.js, Node.js, and Python."
+      },
+      {
+        "question": "Who developed Electron Eye?",
+        "answer": "Electron Eye is developed by Manav Mehta, Rutwik Malav, Nikita More, and Shruti Maliye."
+      },
+      {
+        "question": "Give me a brief explanation of Electron Eye.",
+        "answer": "The proposed system is a comprehensive desktop application designed to support lab managers in monitoring and managing computer usage and system health within a lab environment. The application will track all activities performed on lab computers and compile this data, sending it to a central server for analysis. This will provide lab administrators with critical insights into usage trends, enabling them to optimize resource allocation, improve lab efficiency, and make data-driven decisions. With predictive maintenance features, the system will use usage data and health indicators to foresee potential system malfunctions, allowing administrators to take preventative action before issues arise. Additionally, the application will provide advanced visualization capabilities, including detailed reports and analytics to help administrators detect patterns and make informed decisions on resource management. Security will be a key focus, with user authentication and role-based access control (RBAC) to ensure only authorized users can access sensitive data. Automated alerts will notify administrators of any unauthorized or suspicious activities, enhancing overall security. The user-friendly interface will ensure that lab managers can easily log and monitor activities, facilitating smooth operations and enhancing productivity. Overall, this multitasking tool will streamline lab management, ensuring efficient resource utilization, system reliability, and informed decision-making."
+      },
+      {
+        "question": "Explain Electron Eye.",
+        "answer": "The proposed system is a comprehensive desktop application designed to support lab managers in monitoring and managing computer usage and system health within a lab environment. The application will track all activities performed on lab computers and compile this data, sending it to a central server for analysis. This will provide lab administrators with critical insights into usage trends, enabling them to optimize resource allocation, improve lab efficiency, and make data-driven decisions. With predictive maintenance features, the system will use usage data and health indicators to foresee potential system malfunctions, allowing administrators to take preventative action before issues arise. Additionally, the application will provide advanced visualization capabilities, including detailed reports and analytics to help administrators detect patterns and make informed decisions on resource management. Security will be a key focus, with user authentication and role-based access control (RBAC) to ensure only authorized users can access sensitive data. Automated alerts will notify administrators of any unauthorized or suspicious activities, enhancing overall security. The user-friendly interface will ensure that lab managers can easily log and monitor activities, facilitating smooth operations and enhancing productivity. Overall, this multitasking tool will streamline lab management, ensuring efficient resource utilization, system reliability, and informed decision-making."
       }
     ]
   }
+  
