@@ -32,7 +32,7 @@ const ChatbotContainer = styled.div`
 
 const ChatHeader = styled.div`
   padding: 10px;
-  background-color: #007bff;
+  background-color: #968df0;
   color: white;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
@@ -74,7 +74,7 @@ const Message = styled.div`
 
   &.user {
     align-self: flex-end; /* Sender message on the right */
-    background-color: #007bff;
+    background-color: #968df0;
     color: white;
   }
 
@@ -93,7 +93,7 @@ const ChatInput = styled.div`
 `;
 
 const InputField = styled.input`
-  padding: 8px;
+  padding: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
@@ -104,7 +104,7 @@ const InputField = styled.input`
 const SendButton = styled.button`
   margin-top: 10px; /* Add space between input and button */
   padding: 10px 0; /* Full width button */
-  background-color: #007bff;
+  background-color: #968df0;
   color: white;
   border: none;
   border-radius: 5px;
@@ -156,7 +156,7 @@ function Chatbot({ onClose }) {
   return (
     <ChatbotContainer>
       <ChatHeader>
-        <HeaderTitle>Chatbot</HeaderTitle>
+        <HeaderTitle>Electron Eye Chatbot</HeaderTitle>
         <CloseButton onClick={onClose}>×</CloseButton>
       </ChatHeader>
       <ChatBody>
