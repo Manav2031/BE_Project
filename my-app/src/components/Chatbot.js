@@ -17,10 +17,11 @@ const fuse = new Fuse(data.questions, {
 
 const ChatbotContainer = styled.div`
   position: fixed;
-  top: 20px;
+  top: 50%;
   right: 20px;
-  width: 300px;
-  height: 400px;
+  transform: translateY(-50%); /* Center vertically */
+  width: 350px; /* Increased width */
+  height: 500px; /* Increased height */
   background-color: #f1f1f1;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -44,14 +45,38 @@ const CloseButton = styled.button`
   background: none;
   border: none;
   color: white;
-  font-size: 20px;
+  font-size: 16px; /* Smaller size */
   cursor: pointer;
+  padding: 5px;
 `;
 
 const ChatBody = styled.div`
   flex: 1;
   padding: 10px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Spacing between messages */
+`;
+
+const Message = styled.div`
+  max-width: 80%;
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word;
+  font-size: 14px;
+
+  &.user {
+    align-self: flex-end; /* Sender message on the right */
+    background-color: #007bff;
+    color: white;
+  }
+
+  &.bot {
+    align-self: flex-start; /* Receiver message on the left */
+    background-color: #e1e1e1;
+    color: black;
+  }
 `;
 
 const ChatInput = styled.div`
@@ -62,19 +87,21 @@ const ChatInput = styled.div`
 
 const InputField = styled.input`
   flex: 1;
-  padding: 5px;
+  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 14px;
 `;
 
 const SendButton = styled.button`
   margin-left: 10px;
-  padding: 5px 10px;
+  padding: 8px 12px; /* Smaller size */
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 14px;
 `;
 
 function Chatbot({ onClose }) {
@@ -133,9 +160,9 @@ function Chatbot({ onClose }) {
       </ChatHeader>
       <ChatBody>
         {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.sender}`}>
+          <Message key={index} className={msg.sender}>
             {msg.text}
-          </div>
+          </Message>
         ))}
       </ChatBody>
       <ChatInput>
