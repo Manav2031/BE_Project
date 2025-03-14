@@ -6,7 +6,7 @@ import data from '../data/data.json';
 
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY); // Read API key from .env
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 // Initialize Fuse.js for fuzzy searching
 const fuse = new Fuse(data.questions, {
