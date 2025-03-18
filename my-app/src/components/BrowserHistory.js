@@ -49,14 +49,12 @@ const NoData = styled.div`
 
 const BrowserHistory = () => {
   const [trackStatus, setTrackStatus] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const macAddress = location.state?.macAddress; // Get MAC address from state
 
   // Function to fetch tracking data
   const fetchTrackingData = async () => {
     try {
-      setIsLoading(true);
       const response = await axios.post(
         'https://electron-eye.onrender.com/api/display-browser-history',
         {
@@ -64,10 +62,8 @@ const BrowserHistory = () => {
         }
       );
       setTrackStatus(response.data);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching tracking data:', error);
-      setIsLoading(false);
     }
   };
 
@@ -81,34 +77,30 @@ const BrowserHistory = () => {
   return (
     <Container>
       <TableContainer>
-        {isLoading ? (
-          <NoData>Loading...</NoData>
-        ) : (
-          <>
-            {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
-              <Table>
-                <thead>
-                  <tr>
-                    <Th>Timestamp</Th>
-                    <Th>Title</Th>
-                    <Th>URL</Th>
+        <>
+          {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
+            <Table>
+              <thead>
+                <tr>
+                  <Th>Timestamp</Th>
+                  <Th>Title</Th>
+                  <Th>URL</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {trackStatus.map((item, index) => (
+                  <tr key={index}>
+                    <Td>{item.timestamp}</Td>
+                    <Td>{item.title}</Td>
+                    <Td>{item.url}</Td>
                   </tr>
-                </thead>
-                <tbody>
-                  {trackStatus.map((item, index) => (
-                    <tr key={index}>
-                      <Td>{item.timestamp}</Td>
-                      <Td>{item.title}</Td>
-                      <Td>{item.url}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            ) : (
-              <NoData>No tracking data available.</NoData>
-            )}
-          </>
-        )}
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <NoData>No tracking data available.</NoData>
+          )}
+        </>
       </TableContainer>
     </Container>
   );
