@@ -49,7 +49,6 @@ const NoData = styled.div`
 
 const ConnectedDevices = () => {
   const [devices, setDevices] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [penDriveDetected, setPenDriveDetected] = useState(false);
   const location = useLocation();
   const macAddress = location.state?.macAddress; // Get MAC address from state
@@ -60,7 +59,6 @@ const ConnectedDevices = () => {
   // Function to fetch connected devices
   const fetchConnectedDevices = async () => {
     try {
-      setIsLoading(true);
       const response = await axios.post(
         'https://electron-eye.onrender.com/api/display-connected-devices',
         { macAddress: macAddress }
@@ -101,13 +99,11 @@ const ConnectedDevices = () => {
       }
 
       setPenDriveDetected(isPenDriveDetected); // Update the state based on detection
-      setIsLoading(false);
     } catch (error) {
       console.error(
         'Error fetching connected devices:',
         error.response ? error.response.data : error.message
       );
-      setIsLoading(false);
     }
   };
 
@@ -121,48 +117,44 @@ const ConnectedDevices = () => {
   return (
     <Container>
       <TableContainer>
-        {isLoading ? (
-          <NoData>Loading...</NoData>
-        ) : (
-          <>
-            {Array.isArray(devices) && devices.length > 0 ? (
-              <Table>
-                <thead>
-                  <tr>
-                    <Th>Timestamp</Th>
-                    <Th>Device Type</Th>
-                    <Th>Device Name</Th>
-                    <Th>MAC Address</Th>
-                    <Th>Signal Strength</Th>
-                    <Th>Mount Point</Th>
-                    <Th>File System Type</Th>
-                    <Th>Total Size (in GB)</Th>
-                    <Th>Used Size (in GB)</Th>
-                    <Th>Free Size (in GB)</Th>
+        <>
+          {Array.isArray(devices) && devices.length > 0 ? (
+            <Table>
+              <thead>
+                <tr>
+                  <Th>Timestamp</Th>
+                  <Th>Device Type</Th>
+                  <Th>Device Name</Th>
+                  <Th>MAC Address</Th>
+                  <Th>Signal Strength</Th>
+                  <Th>Mount Point</Th>
+                  <Th>File System Type</Th>
+                  <Th>Total Size (in GB)</Th>
+                  <Th>Used Size (in GB)</Th>
+                  <Th>Free Size (in GB)</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {devices.map((device, index) => (
+                  <tr key={index}>
+                    <Td>{device.timestamp}</Td>
+                    <Td>{device['Device Type']}</Td>
+                    <Td>{device['Device Name']}</Td>
+                    <Td>{device['MAC Address']}</Td>
+                    <Td>{device['Signal Strength']}</Td>
+                    <Td>{device['Mount Point']}</Td>
+                    <Td>{device['File System Type']}</Td>
+                    <Td>{device['Total Size (GB)']}</Td>
+                    <Td>{device['Used Size (GB)']}</Td>
+                    <Td>{device['Free Size (GB)']}</Td>
                   </tr>
-                </thead>
-                <tbody>
-                  {devices.map((device, index) => (
-                    <tr key={index}>
-                      <Td>{device.timestamp}</Td>
-                      <Td>{device['Device Type']}</Td>
-                      <Td>{device['Device Name']}</Td>
-                      <Td>{device['MAC Address']}</Td>
-                      <Td>{device['Signal Strength']}</Td>
-                      <Td>{device['Mount Point']}</Td>
-                      <Td>{device['File System Type']}</Td>
-                      <Td>{device['Total Size (GB)']}</Td>
-                      <Td>{device['Used Size (GB)']}</Td>
-                      <Td>{device['Free Size (GB)']}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            ) : (
-              <NoData>No connected devices found.</NoData>
-            )}
-          </>
-        )}
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <NoData>No connected devices found.</NoData>
+          )}
+        </>
       </TableContainer>
     </Container>
   );

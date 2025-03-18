@@ -47,14 +47,12 @@ const NoData = styled.div`
 
 const NetworkRequests = () => {
   const [trackStatus, setTrackStatus] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const macAddress = location.state?.macAddress; // Get MAC address from state
 
   // Function to fetch tracking data
   const fetchTrackingData = async () => {
     try {
-      setIsLoading(true);
       const response = await axios.post(
         'https://electron-eye.onrender.com/api/display-network-requests',
         {
@@ -62,10 +60,8 @@ const NetworkRequests = () => {
         }
       );
       setTrackStatus(response.data);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching tracking data:', error);
-      setIsLoading(false);
     }
   };
 
@@ -79,38 +75,34 @@ const NetworkRequests = () => {
   return (
     <Container>
       <TableContainer>
-        {isLoading ? (
-          <NoData>Loading...</NoData>
-        ) : (
-          <>
-            {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
-              <Table>
-                <thead>
-                  <tr>
-                    <Th>Timestamp</Th>
-                    <Th>Source IP</Th>
-                    <Th>Source URL</Th>
-                    <Th>Destination IP</Th>
-                    <Th>Destination URL</Th>
+        <>
+          {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
+            <Table>
+              <thead>
+                <tr>
+                  <Th>Timestamp</Th>
+                  <Th>Source IP</Th>
+                  <Th>Source URL</Th>
+                  <Th>Destination IP</Th>
+                  <Th>Destination URL</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {trackStatus.map((item, index) => (
+                  <tr key={index}>
+                    <Td>{item.timestamp}</Td>
+                    <Td>{item.source_ip}</Td>
+                    <Td>{item.source_url}</Td>
+                    <Td>{item.destination_ip}</Td>
+                    <Td>{item.destination_url}</Td>
                   </tr>
-                </thead>
-                <tbody>
-                  {trackStatus.map((item, index) => (
-                    <tr key={index}>
-                      <Td>{item.timestamp}</Td>
-                      <Td>{item.source_ip}</Td>
-                      <Td>{item.source_url}</Td>
-                      <Td>{item.destination_ip}</Td>
-                      <Td>{item.destination_url}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            ) : (
-              <NoData>No tracking data available.</NoData>
-            )}
-          </>
-        )}
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <NoData>No tracking data available.</NoData>
+          )}
+        </>
       </TableContainer>
     </Container>
   );

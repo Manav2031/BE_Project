@@ -47,14 +47,12 @@ const NoData = styled.div`
 
 const ViewLogs = () => {
   const [trackStatus, setTrackStatus] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const macAddress = location.state?.macAddress; // Get MAC address from state
 
   // Function to fetch tracking data
   const fetchTrackingData = async () => {
     try {
-      setIsLoading(true);
       const response = await axios.post(
         'https://electron-eye.onrender.com/api/getTracking',
         {
@@ -62,10 +60,8 @@ const ViewLogs = () => {
         }
       );
       setTrackStatus(response.data);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching tracking data:', error);
-      setIsLoading(false);
     }
   };
 
@@ -79,40 +75,36 @@ const ViewLogs = () => {
   return (
     <Container>
       <TableContainer>
-        {isLoading ? (
-          <NoData>Loading...</NoData>
-        ) : (
-          <>
-            {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
-              <Table>
-                <thead>
-                  <tr>
-                    <Th>Timestamp</Th>
-                    <Th>Process ID</Th>
-                    <Th>Process Name</Th>
-                    <Th>Start Time</Th>
-                    <Th>End Time</Th>
-                    <Th>Duration (in minutes)</Th>
+        <>
+          {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
+            <Table>
+              <thead>
+                <tr>
+                  <Th>Timestamp</Th>
+                  <Th>Process ID</Th>
+                  <Th>Process Name</Th>
+                  <Th>Start Time</Th>
+                  <Th>End Time</Th>
+                  <Th>Duration (in minutes)</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {trackStatus.map((item, index) => (
+                  <tr key={index}>
+                    <Td>{item.timestamp}</Td>
+                    <Td>{item.pid}</Td>
+                    <Td>{item.name}</Td>
+                    <Td>{item.start_time}</Td>
+                    <Td>{item.end_time}</Td>
+                    <Td>{item.duration_minutes}</Td>
                   </tr>
-                </thead>
-                <tbody>
-                  {trackStatus.map((item, index) => (
-                    <tr key={index}>
-                      <Td>{item.timestamp}</Td>
-                      <Td>{item.pid}</Td>
-                      <Td>{item.name}</Td>
-                      <Td>{item.start_time}</Td>
-                      <Td>{item.end_time}</Td>
-                      <Td>{item.duration_minutes}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            ) : (
-              <NoData>No tracking data available.</NoData>
-            )}
-          </>
-        )}
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <NoData>No tracking data available.</NoData>
+          )}
+        </>
       </TableContainer>
     </Container>
   );

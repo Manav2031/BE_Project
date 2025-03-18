@@ -47,14 +47,12 @@ const NoData = styled.div`
 
 const CheckSystemHealth = () => {
   const [trackStatus, setTrackStatus] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const macAddress = location.state?.macAddress; // Get MAC address from state
 
   // Function to fetch tracking data
   const fetchTrackingData = async () => {
     try {
-      setIsLoading(true);
       const response = await axios.post(
         'https://electron-eye.onrender.com/api/check-system-health',
         {
@@ -62,10 +60,8 @@ const CheckSystemHealth = () => {
         }
       );
       setTrackStatus(response.data);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching tracking data:', error);
-      setIsLoading(false);
     }
   };
 
@@ -79,40 +75,36 @@ const CheckSystemHealth = () => {
   return (
     <Container>
       <TableContainer>
-        {isLoading ? (
-          <NoData>Loading...</NoData>
-        ) : (
-          <>
-            {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
-              <Table>
-                <thead>
-                  <tr>
-                    <Th>Timestamp</Th>
-                    <Th>CPU Usage (in %)</Th>
-                    <Th>Memory Used (in GB)</Th>
-                    <Th>Memory Total (in GB)</Th>
-                    <Th>Disk Used (in GB)</Th>
-                    <Th>Disk Total (in GB)</Th>
+        <>
+          {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
+            <Table>
+              <thead>
+                <tr>
+                  <Th>Timestamp</Th>
+                  <Th>CPU Usage (in %)</Th>
+                  <Th>Memory Used (in GB)</Th>
+                  <Th>Memory Total (in GB)</Th>
+                  <Th>Disk Used (in GB)</Th>
+                  <Th>Disk Total (in GB)</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {trackStatus.map((item, index) => (
+                  <tr key={index}>
+                    <Td>{item.timestamp}</Td>
+                    <Td>{item.cpu_usage}</Td>
+                    <Td>{item.memory_used}</Td>
+                    <Td>{item.memory_total}</Td>
+                    <Td>{item.disk_used}</Td>
+                    <Td>{item.disk_total}</Td>
                   </tr>
-                </thead>
-                <tbody>
-                  {trackStatus.map((item, index) => (
-                    <tr key={index}>
-                      <Td>{item.timestamp}</Td>
-                      <Td>{item.cpu_usage}</Td>
-                      <Td>{item.memory_used}</Td>
-                      <Td>{item.memory_total}</Td>
-                      <Td>{item.disk_used}</Td>
-                      <Td>{item.disk_total}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            ) : (
-              <NoData>No tracking data available.</NoData>
-            )}
-          </>
-        )}
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <NoData>No tracking data available.</NoData>
+          )}
+        </>
       </TableContainer>
     </Container>
   );

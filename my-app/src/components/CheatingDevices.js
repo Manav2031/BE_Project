@@ -46,7 +46,6 @@ const NoData = styled.div`
 
 const CheatingDevices = () => {
   const [trackStatus, setTrackStatus] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Function to filter unique types of cheating
   const filterUniqueCheatingTypes = (data) => {
@@ -64,17 +63,14 @@ const CheatingDevices = () => {
   // Function to fetch tracking data
   const fetchTrackingData = async () => {
     try {
-      setIsLoading(true);
       const response = await axios.get(
         'https://electron-eye.onrender.com/api/display-cheating-devices'
       );
       // Filter data to display unique types of cheating
       const uniqueCheatingTypes = filterUniqueCheatingTypes(response.data);
       setTrackStatus(uniqueCheatingTypes);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching tracking data:', error);
-      setIsLoading(false);
     }
   };
 
@@ -88,34 +84,30 @@ const CheatingDevices = () => {
   return (
     <Container>
       <TableContainer>
-        {isLoading ? (
-          <NoData>Loading...</NoData>
-        ) : (
-          <>
-            {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
-              <Table>
-                <thead>
-                  <tr>
-                    <Th>Timestamp</Th>
-                    <Th>MAC Address</Th>
-                    <Th>Type of Cheating</Th>
+        <>
+          {Array.isArray(trackStatus) && trackStatus.length > 0 ? (
+            <Table>
+              <thead>
+                <tr>
+                  <Th>Timestamp</Th>
+                  <Th>MAC Address</Th>
+                  <Th>Type of Cheating</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {trackStatus.map((item, index) => (
+                  <tr key={index}>
+                    <Td>{item.timestamp}</Td>
+                    <Td>{item.mac_address}</Td>
+                    <Td>{item.type_of_cheating}</Td>
                   </tr>
-                </thead>
-                <tbody>
-                  {trackStatus.map((item, index) => (
-                    <tr key={index}>
-                      <Td>{item.timestamp}</Td>
-                      <Td>{item.mac_address}</Td>
-                      <Td>{item.type_of_cheating}</Td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            ) : (
-              <NoData>No tracking data available.</NoData>
-            )}
-          </>
-        )}
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <NoData>No tracking data available.</NoData>
+          )}
+        </>
       </TableContainer>
     </Container>
   );
