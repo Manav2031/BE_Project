@@ -524,7 +524,7 @@ const ViewGraphs = () => {
         )}
       </div>
       {/* Scatter Chart Timestamp Filters */}
-      <div className="timestamp-filters">
+      <div className="timestamp-filtersscatter">
         <h3>Scatter Chart Filters</h3>
         <label>
           Start Timestamp:
