@@ -179,10 +179,14 @@ const ViewGraphs = () => {
   // Filter data based on timestamps
   const filterDataByTimestamp = (data) => {
     if (!startTimestamp || !endTimestamp) return data;
-    return data.filter(
-      (item) =>
-        item.timestamp >= startTimestamp && item.timestamp <= endTimestamp
-    );
+
+    const startDate = new Date(startTimestamp);
+    const endDate = new Date(endTimestamp);
+
+    return data.filter((item) => {
+      const itemDate = new Date(item.timestamp);
+      return itemDate >= startDate && itemDate <= endDate;
+    });
   };
 
   // Prepare bar chart data
@@ -477,6 +481,7 @@ const ViewGraphs = () => {
 
   return (
     <div className="graph-container">
+      {/* Timestamp Filters */}
       <div className="timestamp-filters">
         <label>
           Start Timestamp:
@@ -495,6 +500,7 @@ const ViewGraphs = () => {
           />
         </label>
       </div>
+
       <div style={{ marginTop: '100px' }} className="chart-container">
         {filteredProcessData.length > 0 ? (
           <Bar data={barChartData} options={barOptions} className="bargraph" />
