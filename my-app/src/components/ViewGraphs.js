@@ -40,6 +40,8 @@ const ViewGraphs = () => {
   const [networkDetailsData, setNetworkDetailsData] = useState([]);
   const [networkRequestsData, setNetworkRequestsData] = useState([]);
   const [browserHistoryData, setBrowserHistoryData] = useState([]);
+  const [startTimestamp, setStartTimestamp] = useState('');
+  const [endTimestamp, setEndTimestamp] = useState('');
   const location = useLocation();
   const macAddress = location.state?.macAddress; // Get MAC address from state
 
@@ -75,6 +77,7 @@ const ViewGraphs = () => {
       const extractedData = response.data.map((item) => ({
         deviceName: item['Device Name'],
         signalStrength: item['Signal Strength'],
+        timestamp: item.timestamp,
       }));
       setDeviceSignalData(extractedData);
     } catch (error) {
@@ -173,13 +176,25 @@ const ViewGraphs = () => {
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [macAddress]);
 
+  // Filter data based on timestamps
+  const filterDataByTimestamp = (data) => {
+    if (!startTimestamp || !endTimestamp) return data;
+    return data.filter(
+      (item) =>
+        item.timestamp >= startTimestamp && item.timestamp <= endTimestamp
+    );
+  };
+
+  // Prepare bar chart data
+  const filteredProcessData = filterDataByTimestamp(processData);
+
   // Prepare bar chart data
   const barChartData = {
-    labels: processData.map((item) => item.timestamp),
+    labels: filteredProcessData.map((item) => item.timestamp),
     datasets: [
       {
         label: 'Duration (in minutes)',
-        data: processData.map((item) => item.duration_minutes),
+        data: filteredProcessData.map((item) => item.duration_minutes),
         backgroundColor: '#968df0',
       },
     ],
@@ -191,7 +206,7 @@ const ViewGraphs = () => {
     scales: {
       y: {
         type: 'category',
-        labels: processData.map((item) => item.name),
+        labels: filteredProcessData.map((item) => item.name),
         title: {
           display: true,
           text: 'Process Name',
@@ -215,12 +230,14 @@ const ViewGraphs = () => {
     },
   };
 
-  // Prepare scatter plot data using the new device signal data
+  // Prepare scatter plot data
+  const filteredDeviceSignalData = filterDataByTimestamp(deviceSignalData);
+
   const scatterData = {
     datasets: [
       {
         label: 'Signal Strength',
-        data: deviceSignalData.map((item) => ({
+        data: filteredDeviceSignalData.map((item) => ({
           x: item.deviceName,
           y: item.signalStrength,
         })),
@@ -234,7 +251,7 @@ const ViewGraphs = () => {
     scales: {
       x: {
         type: 'category',
-        labels: deviceSignalData.map((item) => item.deviceName),
+        labels: filteredDeviceSignalData.map((item) => item.deviceName),
         title: {
           display: true,
           text: 'Device Name',
@@ -460,15 +477,33 @@ const ViewGraphs = () => {
 
   return (
     <div className="graph-container">
+      <div className="timestamp-filters">
+        <label>
+          Start Timestamp:
+          <input
+            type="datetime-local"
+            value={startTimestamp}
+            onChange={(e) => setStartTimestamp(e.target.value)}
+          />
+        </label>
+        <label>
+          End Timestamp:
+          <input
+            type="datetime-local"
+            value={endTimestamp}
+            onChange={(e) => setEndTimestamp(e.target.value)}
+          />
+        </label>
+      </div>
       <div style={{ marginTop: '100px' }} className="chart-container">
-        {processData.length > 0 ? (
+        {filteredProcessData.length > 0 ? (
           <Bar data={barChartData} options={barOptions} className="bargraph" />
         ) : (
           <p>Loading bar graph data...</p>
         )}
       </div>
       <div className="chart-container">
-        {deviceSignalData.length > 0 ? (
+        {filteredDeviceSignalData.length > 0 ? (
           <Scatter
             data={scatterData}
             options={scatterOptions}
