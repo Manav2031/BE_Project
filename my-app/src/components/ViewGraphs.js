@@ -498,7 +498,7 @@ const ViewGraphs = () => {
   return (
     <div className="graph-container">
       <div className="timestamp-filters">
-        <h3>Bar Chart Filters</h3>
+        <h3 className="h3bar">Bar Chart Filters</h3>
         <label>
           Start Timestamp:
           <input
@@ -525,7 +525,7 @@ const ViewGraphs = () => {
       </div>
       {/* Scatter Chart Timestamp Filters */}
       <div className="timestamp-filtersscatter">
-        <h3>Scatter Chart Filters</h3>
+        <h3 className="h3bar">Scatter Chart Filters</h3>
         <label>
           Start Timestamp:
           <input
