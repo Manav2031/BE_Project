@@ -40,8 +40,10 @@ const ViewGraphs = () => {
   const [networkDetailsData, setNetworkDetailsData] = useState([]);
   const [networkRequestsData, setNetworkRequestsData] = useState([]);
   const [browserHistoryData, setBrowserHistoryData] = useState([]);
-  const [startTimestamp, setStartTimestamp] = useState('');
-  const [endTimestamp, setEndTimestamp] = useState('');
+  const [barStartTimestamp, setBarStartTimestamp] = useState('');
+  const [barEndTimestamp, setBarEndTimestamp] = useState('');
+  const [scatterStartTimestamp, setScatterStartTimestamp] = useState('');
+  const [scatterEndTimestamp, setScatterEndTimestamp] = useState('');
   const location = useLocation();
   const macAddress = location.state?.macAddress; // Get MAC address from state
 
@@ -176,12 +178,25 @@ const ViewGraphs = () => {
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [macAddress]);
 
-  // Filter data based on timestamps
-  const filterDataByTimestamp = (data) => {
-    if (!startTimestamp || !endTimestamp) return data;
+  // Filter data based on timestamps for bar chart
+  const filterBarDataByTimestamp = (data) => {
+    if (!barStartTimestamp || !barEndTimestamp) return data;
 
-    const startDate = new Date(startTimestamp);
-    const endDate = new Date(endTimestamp);
+    const startDate = new Date(barStartTimestamp);
+    const endDate = new Date(barEndTimestamp);
+
+    return data.filter((item) => {
+      const itemDate = new Date(item.timestamp);
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  };
+
+  // Filter data based on timestamps for scatter chart
+  const filterScatterDataByTimestamp = (data) => {
+    if (!scatterStartTimestamp || !scatterEndTimestamp) return data;
+
+    const startDate = new Date(scatterStartTimestamp);
+    const endDate = new Date(scatterEndTimestamp);
 
     return data.filter((item) => {
       const itemDate = new Date(item.timestamp);
@@ -190,7 +205,7 @@ const ViewGraphs = () => {
   };
 
   // Prepare bar chart data
-  const filteredProcessData = filterDataByTimestamp(processData);
+  const filteredProcessData = filterBarDataByTimestamp(processData);
 
   // Prepare bar chart data
   const barChartData = {
@@ -235,7 +250,8 @@ const ViewGraphs = () => {
   };
 
   // Prepare scatter plot data
-  const filteredDeviceSignalData = filterDataByTimestamp(deviceSignalData);
+  const filteredDeviceSignalData =
+    filterScatterDataByTimestamp(deviceSignalData);
 
   const scatterData = {
     datasets: [
@@ -481,32 +497,51 @@ const ViewGraphs = () => {
 
   return (
     <div className="graph-container">
-      {/* Timestamp Filters */}
       <div className="timestamp-filters">
+        <h3>Bar Chart Filters</h3>
         <label>
           Start Timestamp:
           <input
             type="datetime-local"
-            value={startTimestamp}
-            onChange={(e) => setStartTimestamp(e.target.value)}
+            value={barStartTimestamp}
+            onChange={(e) => setBarStartTimestamp(e.target.value)}
           />
         </label>
         <label>
           End Timestamp:
           <input
             type="datetime-local"
-            value={endTimestamp}
-            onChange={(e) => setEndTimestamp(e.target.value)}
+            value={barEndTimestamp}
+            onChange={(e) => setBarEndTimestamp(e.target.value)}
           />
         </label>
       </div>
-
       <div style={{ marginTop: '100px' }} className="chart-container">
         {filteredProcessData.length > 0 ? (
           <Bar data={barChartData} options={barOptions} className="bargraph" />
         ) : (
-          <p>Loading bar graph data...</p>
+          <p>No data available for the selected time range.</p>
         )}
+      </div>
+      {/* Scatter Chart Timestamp Filters */}
+      <div className="timestamp-filters">
+        <h3>Scatter Chart Filters</h3>
+        <label>
+          Start Timestamp:
+          <input
+            type="datetime-local"
+            value={scatterStartTimestamp}
+            onChange={(e) => setScatterStartTimestamp(e.target.value)}
+          />
+        </label>
+        <label>
+          End Timestamp:
+          <input
+            type="datetime-local"
+            value={scatterEndTimestamp}
+            onChange={(e) => setScatterEndTimestamp(e.target.value)}
+          />
+        </label>
       </div>
       <div className="chart-container">
         {filteredDeviceSignalData.length > 0 ? (
@@ -516,7 +551,7 @@ const ViewGraphs = () => {
             className="scatterplot"
           />
         ) : (
-          <p>Loading scatter plot data...</p>
+          <p>No data available for the selected time range.</p>
         )}
       </div>
       <div className="chart-container">
