@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { PolarArea } from 'react-chartjs-2';
+import { HeatMap } from 'react-chartjs-2';
 import axios from 'axios';
 import {
   Chart as ChartJS,
-  RadialLinearScale,
-  ArcElement,
+  LinearScale,
+  CategoryScale,
+  PointElement,
   Tooltip,
   Legend,
 } from 'chart.js';
 
 // Register required components in Chart.js
-ChartJS.register(RadialLinearScale, ArcElement, Tooltip, Legend);
+ChartJS.register(LinearScale, CategoryScale, PointElement, Tooltip, Legend);
 
 const CheatingDevicesGraphs = () => {
   const [graphData, setGraphData] = useState([]);
@@ -33,42 +34,43 @@ const CheatingDevicesGraphs = () => {
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
-  // Prepare polar area chart data
+  // Prepare heatmap data
   const macAddresses = [...new Set(graphData.map((item) => item.mac_address))];
   const cheatingTypes = [
     ...new Set(graphData.map((item) => item.type_of_cheating)),
   ];
 
-  // Count occurrences of each cheating type per MAC address
-  const polarAreaChartData = {
-    labels: cheatingTypes, // Cheating types for the chart
-    datasets: [
-      {
-        label: 'Cheating Types by MAC Address',
-        data: cheatingTypes.map((cheatingType) => {
-          // Count total occurrences of the cheating type across all MAC addresses
-          return graphData.filter(
-            (item) => item.type_of_cheating === cheatingType
-          ).length;
-        }),
-        backgroundColor: cheatingTypes.map(
-          (_, index) =>
-            `rgba(${(index * 100) % 255}, ${(index * 150) % 255}, ${
-              (index * 200) % 255
-            }, 0.6)`
-        ), // Dynamic colors for each cheating type
-        borderColor: cheatingTypes.map(
-          (_, index) =>
-            `rgba(${(index * 100) % 255}, ${(index * 150) % 255}, ${
-              (index * 200) % 255
-            }, 1)`
-        ), // Dynamic border colors
-        borderWidth: 1,
+  // Create a matrix for heatmap data
+  const heatmapData = macAddresses.map((mac) => {
+    return cheatingTypes.map((cheatingType) => {
+      return graphData.filter(
+        (item) =>
+          item.mac_address === mac && item.type_of_cheating === cheatingType
+      ).length;
+    });
+  });
+
+  const heatmapChartData = {
+    labels: cheatingTypes, // Cheating types for the x-axis
+    datasets: macAddresses.map((mac, index) => ({
+      label: mac, // Label each MAC address
+      data: heatmapData[index], // Data for the current MAC address
+      backgroundColor: (ctx) => {
+        const value = ctx.dataset.data[ctx.dataIndex];
+        const opacity =
+          value > 0 ? 0.5 + (value / Math.max(...heatmapData.flat())) * 0.5 : 0; // Dynamic opacity based on value
+        return `rgba(${(index * 100) % 255}, ${(index * 150) % 255}, ${
+          (index * 200) % 255
+        }, ${opacity})`;
       },
-    ],
+      borderColor: `rgba(${(index * 100) % 255}, ${(index * 150) % 255}, ${
+        (index * 200) % 255
+      }, 1)`,
+      borderWidth: 1,
+    })),
   };
 
-  const polarAreaChartOptions = {
+  const heatmapChartOptions = {
     responsive: true,
     maintainAspectRatio: false, // Ensures that the chart adjusts to the container's height and width
     plugins: {
@@ -79,14 +81,28 @@ const CheatingDevicesGraphs = () => {
         display: true,
         text: 'Types of Cheating by MAC Addresses',
       },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const mac = macAddresses[ctx.datasetIndex];
+            const cheatingType = cheatingTypes[ctx.dataIndex];
+            const count = ctx.dataset.data[ctx.dataIndex];
+            return `${mac}: ${cheatingType} - ${count} occurrence(s)`;
+          },
+        },
+      },
     },
     scales: {
-      r: {
-        pointLabels: {
+      x: {
+        title: {
           display: true,
-          font: {
-            size: 14,
-          },
+          text: 'Types of Cheating',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'MAC Addresses',
         },
       },
     },
@@ -96,10 +112,7 @@ const CheatingDevicesGraphs = () => {
     <div style={styles.centerContainer}>
       {graphData.length > 0 ? (
         <div style={styles.chartContainer}>
-          <PolarArea
-            data={polarAreaChartData}
-            options={polarAreaChartOptions}
-          />
+          <HeatMap data={heatmapChartData} options={heatmapChartOptions} />
         </div>
       ) : (
         <p>Loading data...</p>
