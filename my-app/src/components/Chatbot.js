@@ -123,6 +123,7 @@ const MicButton = styled.button`
   color: #968df0;
   font-size: 20px;
   margin-left: 10px;
+  width: 20px;
 `;
 
 function Chatbot({ onClose }) {
