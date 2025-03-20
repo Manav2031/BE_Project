@@ -44,6 +44,8 @@ const ViewGraphs = () => {
   const [barEndTimestamp, setBarEndTimestamp] = useState('');
   const [scatterStartTimestamp, setScatterStartTimestamp] = useState('');
   const [scatterEndTimestamp, setScatterEndTimestamp] = useState('');
+  const [lineStartTimestamp, setLineStartTimestamp] = useState('');
+  const [lineEndTimestamp, setLineEndTimestamp] = useState('');
   const location = useLocation();
   const macAddress = location.state?.macAddress; // Get MAC address from state
 
@@ -204,6 +206,18 @@ const ViewGraphs = () => {
     });
   };
 
+  const filterLineDataByTimestamp = (data) => {
+    if (!lineStartTimestamp || !lineEndTimestamp) return data;
+
+    const startDate = new Date(lineStartTimestamp);
+    const endDate = new Date(lineEndTimestamp);
+
+    return data.filter((item) => {
+      const itemDate = new Date(item.timestamp);
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  };
+
   // Prepare bar chart data
   const filteredProcessData = filterBarDataByTimestamp(processData);
 
@@ -295,13 +309,15 @@ const ViewGraphs = () => {
     },
   };
 
+  const filteredSystemUsageData = filterLineDataByTimestamp(systemUsageData);
+
   // Prepare line chart data
   const lineChartData = {
-    labels: systemUsageData.map((item) => item.timestamp), // Use timestamp for x-axis
+    labels: filteredSystemUsageData.map((item) => item.timestamp), // Use timestamp for x-axis
     datasets: [
       {
         label: 'CPU Usage (in %)',
-        data: systemUsageData.map((item) => item.cpu_usage), // CPU usage for the first line
+        data: filteredSystemUsageData.map((item) => item.cpu_usage), // CPU usage for the first line
         borderColor: '#968df0', // Color for the first line (CPU Usage) #42a5f5
         fill: false, // Line won't be filled
       },
@@ -554,8 +570,27 @@ const ViewGraphs = () => {
           <p>No data available for the selected time range.</p>
         )}
       </div>
+      <div className="timestamp-filtersline">
+        <h3 className="h3bar">Line Chart Filters</h3>
+        <label>
+          Start Timestamp:
+          <input
+            type="datetime-local"
+            value={lineStartTimestamp}
+            onChange={(e) => setLineStartTimestamp(e.target.value)}
+          />
+        </label>
+        <label>
+          End Timestamp:
+          <input
+            type="datetime-local"
+            value={lineEndTimestamp}
+            onChange={(e) => setLineEndTimestamp(e.target.value)}
+          />
+        </label>
+      </div>
       <div className="chart-container">
-        {systemUsageData.length > 0 ? (
+        {filteredSystemUsageData.length > 0 ? (
           <Line data={lineChartData} options={lineChartOptions} />
         ) : (
           <p>Loading data...</p>
@@ -575,13 +610,13 @@ const ViewGraphs = () => {
           <p>Loading data...</p>
         )}
       </div> */}
-      <div style={{ marginBottom: '100px' }} className="chart-container">
+      {/* <div style={{ marginBottom: '100px' }} className="chart-container">
         {networkDetailsData.length > 0 ? (
           <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
         ) : (
           <p>Loading data...</p>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
