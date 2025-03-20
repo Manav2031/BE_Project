@@ -514,7 +514,7 @@ const ViewGraphs = () => {
   return (
     <div className="graph-container">
       {/* Bar Chart Section */}
-      <div className="timestamp-filters">
+      <div className="timestamp-filters" style={{ marginTop: '400px' }}>
         <h3 className="h3bar">Bar Chart Filters</h3>
         <label>
           Start Timestamp:
