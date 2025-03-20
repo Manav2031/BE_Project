@@ -115,7 +115,7 @@ const CheatingDevicesGraphs = () => {
           <HeatMap data={heatmapChartData} options={heatmapChartOptions} />
         </div>
       ) : (
-        <p>Loading data...</p>
+        <p>Loading data</p>
       )}
     </div>
   );
