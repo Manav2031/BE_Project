@@ -96,7 +96,7 @@ const ChatInput = styled.div`
 
 const InputField = styled.input`
   padding: 10px !important;
-  margin: 10px 0 !important;
+  margin: 10px 10px !important;
   width: calc(
     100% - 50px
   ) !important; // Adjusted width to leave space for mic icon
@@ -124,7 +124,7 @@ const MicButton = styled.button`
   cursor: pointer;
   color: #968df0;
   font-size: 20px;
-  margin-left: 10px; // Reduced margin to minimize space
+  margin-left: -20px; // Reduced margin to minimize space
   width: 20px;
 `;
 
