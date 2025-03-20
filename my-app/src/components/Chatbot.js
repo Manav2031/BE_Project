@@ -126,6 +126,11 @@ const MicButton = styled.button`
   font-size: 20px;
   margin-left: -20px; // Reduced margin to minimize space
   width: 20px;
+
+  &:hover {
+    background: none; // Ensure no background change on hover
+    color: #968df0; // Ensure no color change on hover
+  }
 `;
 
 function Chatbot({ onClose }) {
