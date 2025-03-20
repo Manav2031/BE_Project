@@ -122,7 +122,7 @@ const MicButton = styled.button`
   cursor: pointer;
   color: #968df0;
   font-size: 20px;
-  margin-left: 10px;
+  margin-left: 15px;
   width: 20px;
 `;
 
