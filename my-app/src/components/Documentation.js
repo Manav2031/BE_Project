@@ -1,6 +1,13 @@
-import React from "react";
-import styled from "styled-components";
-import { FaServer, FaChartLine, FaTools, FaDesktop, FaShieldAlt, FaCogs } from "react-icons/fa";
+import React from 'react';
+import styled from 'styled-components';
+import {
+  FaServer,
+  FaChartLine,
+  FaTools,
+  FaDesktop,
+  FaShieldAlt,
+  FaCogs,
+} from 'react-icons/fa';
 
 const PageContainer = styled.div`
   font-family: Arial, sans-serif;
@@ -52,44 +59,70 @@ const Paragraph = styled.p`
 const DocumentationPage = () => {
   return (
     <PageContainer>
-
       <Section>
         <Block>
-          <IconWrapper><FaServer /></IconWrapper>
+          <IconWrapper>
+            <FaServer />
+          </IconWrapper>
           <SubTitle>Centralized Data Management</SubTitle>
-          <Paragraph>Consolidates system usage and health data for real-time monitoring.</Paragraph>
+          <Paragraph>
+            Consolidates system usage and health data for real-time monitoring.
+          </Paragraph>
         </Block>
 
         <Block>
-          <IconWrapper><FaChartLine /></IconWrapper>
+          <IconWrapper>
+            <FaChartLine />
+          </IconWrapper>
           <SubTitle>Predictive Maintenance</SubTitle>
-          <Paragraph>Uses machine learning to anticipate system failures and schedule maintenance.</Paragraph>
+          <Paragraph>
+            Uses machine learning to anticipate system failures and schedule
+            maintenance.
+          </Paragraph>
         </Block>
 
         <Block>
-          <IconWrapper><FaDesktop /></IconWrapper>
+          <IconWrapper>
+            <FaDesktop />
+          </IconWrapper>
           <SubTitle>Advanced Visualization</SubTitle>
-          <Paragraph>Interactive Power BI dashboards for deep insights into system performance.</Paragraph>
+          <Paragraph>
+            Interactive graphs and charts for deep insights into system
+            performance.
+          </Paragraph>
         </Block>
       </Section>
 
       <Section>
         <Block>
-          <IconWrapper><FaShieldAlt /></IconWrapper>
+          <IconWrapper>
+            <FaShieldAlt />
+          </IconWrapper>
           <SubTitle>Enhanced Security</SubTitle>
-          <Paragraph>Ensures robust security protocols to safeguard system integrity.</Paragraph>
+          <Paragraph>
+            Ensures robust security protocols to safeguard system integrity.
+          </Paragraph>
         </Block>
 
         <Block>
-          <IconWrapper><FaTools /></IconWrapper>
+          <IconWrapper>
+            <FaTools />
+          </IconWrapper>
           <SubTitle>Proactive Maintenance</SubTitle>
-          <Paragraph>Reduces downtime by predicting system issues before they occur.</Paragraph>
+          <Paragraph>
+            Reduces downtime by predicting system issues before they occur.
+          </Paragraph>
         </Block>
 
         <Block>
-          <IconWrapper><FaCogs /></IconWrapper>
+          <IconWrapper>
+            <FaCogs />
+          </IconWrapper>
           <SubTitle>Optimized Resource Allocation</SubTitle>
-          <Paragraph>Helps allocate computing resources efficiently based on usage trends.</Paragraph>
+          <Paragraph>
+            Helps allocate computing resources efficiently based on usage
+            trends.
+          </Paragraph>
         </Block>
       </Section>
     </PageContainer>
