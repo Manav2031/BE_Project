@@ -21,6 +21,10 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add shadow */
 }
 
+.chart-container.line-chart {
+  margin-bottom: 100px; /* Add space after the Line Chart */
+}
+
 .bargraph,
 .scatterplot,
 .linegraph {
@@ -34,7 +38,8 @@
   display: flex;
   gap: 20px;
   justify-content: center;
-  margin-bottom: 20px; /* Add spacing below filters */
+  margin-top: 20px; /* Add space above the filters */
+  margin-bottom: 20px; /* Add space below the filters */
 }
 
 .timestamp-filters label,

@@ -513,6 +513,7 @@ const ViewGraphs = () => {
 
   return (
     <div className="graph-container">
+      {/* Bar Chart Section */}
       <div className="timestamp-filters">
         <h3 className="h3bar">Bar Chart Filters</h3>
         <label>
@@ -532,14 +533,15 @@ const ViewGraphs = () => {
           />
         </label>
       </div>
-      <div style={{ marginTop: '100px' }} className="chart-container">
+      <div className="chart-container">
         {filteredProcessData.length > 0 ? (
           <Bar data={barChartData} options={barOptions} className="bargraph" />
         ) : (
           <p>No data available for the selected time range.</p>
         )}
       </div>
-      {/* Scatter Chart Timestamp Filters */}
+
+      {/* Scatter Chart Section */}
       <div className="timestamp-filtersscatter">
         <h3 className="h3bar">Scatter Chart Filters</h3>
         <label>
@@ -570,6 +572,8 @@ const ViewGraphs = () => {
           <p>No data available for the selected time range.</p>
         )}
       </div>
+
+      {/* Line Chart Section */}
       <div className="timestamp-filtersline">
         <h3 className="h3bar">Line Chart Filters</h3>
         <label>
@@ -589,7 +593,7 @@ const ViewGraphs = () => {
           />
         </label>
       </div>
-      <div className="chart-container">
+      <div className="chart-container line-chart">
         {filteredSystemUsageData.length > 0 ? (
           <Line data={lineChartData} options={lineChartOptions} />
         ) : (
