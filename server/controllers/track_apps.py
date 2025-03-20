@@ -493,14 +493,14 @@ def predict_failure(mac_address, model):
     prediction = model.predict(X_new)[0]
     
     # If CPU usage is predicted to exceed a threshold, trigger an alert
-    if prediction > 90:  # Example threshold, you can adjust this
+    if prediction > 5:  # Example threshold, you can adjust this
         print(f"Warning: High CPU usage predicted ({prediction:.2f}%)! System might require maintenance soon.")
         db = client[mac_address]
         alert_collection = db[f'failure_alerts_{mac_address}']
         alert_collection.insert_one({
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'predicted_cpu_usage': prediction,
-            'alert': 'High CPU usage predicted. Possible maintenance required.'
+            'alert': 'High CPU usage predicted. Reduce the number of applications you are using.'
         })
 
 # Start monitoring system health data and train/predict with ML model

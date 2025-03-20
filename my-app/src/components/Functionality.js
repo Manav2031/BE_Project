@@ -1,14 +1,22 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaNetworkWired, FaClipboardList, FaLaptop, FaHistory, FaHeartbeat, FaChartBar } from 'react-icons/fa';
+import {
+  FaNetworkWired,
+  FaClipboardList,
+  FaLaptop,
+  FaHistory,
+  FaHeartbeat,
+  FaChartBar,
+} from 'react-icons/fa';
+import { MdOutlineSmsFailed } from 'react-icons/md';
 import { MdDevices, MdOutlineNetworkCheck } from 'react-icons/md';
 
 const Section = styled.section`
   min-height: 90vh;
   width: 100vw;
   position: relative;
-  background-color: ${(props) => props.theme.body || "#f4f4f4"};
+  background-color: ${(props) => props.theme.body || '#f4f4f4'};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -39,8 +47,8 @@ const Button = styled(Link)`
   width: 75%;
   padding: 1.5rem;
   font-size: 1.3rem;
-  color: ${(props) => props.theme.text || "white"};
-  background-color: ${(props) => props.theme.primary || "#968df0"};
+  color: ${(props) => props.theme.text || 'white'};
+  background-color: ${(props) => props.theme.primary || '#968df0'};
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -54,7 +62,7 @@ const Button = styled(Link)`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 
   &:hover {
-    background-color: ${(props) => props.theme.secondary || "#500073"};
+    background-color: ${(props) => props.theme.secondary || '#500073'};
     transform: scale(1.05);
   }
 
@@ -65,7 +73,7 @@ const Button = styled(Link)`
 
 const Title = styled.h2`
   font-size: 2rem;
-  color: ${(props) => props.theme.text || "#333"};
+  color: ${(props) => props.theme.text || '#333'};
   margin-bottom: 1.5rem;
 `;
 
@@ -76,7 +84,10 @@ function Functionality() {
   return (
     <Section id="Functionality">
       <Container>
-        <Title> <FaLaptop></FaLaptop> System Monitoring Options</Title>
+        <Title>
+          {' '}
+          <FaLaptop></FaLaptop> System Monitoring Options
+        </Title>
         <ButtonContainer>
           <Button to="/view-logs" state={{ macAddress }}>
             <FaClipboardList /> View Process Details
@@ -95,6 +106,9 @@ function Functionality() {
           </Button>
           <Button to="/check-system-health" state={{ macAddress }}>
             <FaHeartbeat /> View System Health
+          </Button>
+          <Button to="/view-failure-alerts" state={{ macAddress }}>
+            <MdOutlineSmsFailed /> View Failure Alerts
           </Button>
           <Button to="/view-graphs" state={{ macAddress }}>
             <FaChartBar /> View Graphs

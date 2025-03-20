@@ -217,6 +217,30 @@ exports.displayNetworkRequests = async (req, res) => {
   }
 };
 
+exports.displayFailureAlerts = async (req, res) => {
+  console.log(req.body);
+  const { macAddress } = req.body;
+  console.log(macAddress);
+  const client = new MongoClient(MONGODB_URI);
+  try {
+    await client.connect();
+
+    const database = client.db(macAddress);
+    const collection = database.collection('failure_alerts_' + macAddress);
+
+    // Fetch data
+    const data = await collection.find().toArray();
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    // Close the database connection
+    await client.close();
+  }
+};
+
 exports.displayConnectedDevices = async (req, res) => {
   console.log(req.body);
   const { macAddress } = req.body;

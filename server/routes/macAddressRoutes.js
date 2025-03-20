@@ -19,6 +19,10 @@ router.post(
   macAddressController.displayNetworkRequests
 );
 router.post(
+  '/display-failure-alerts',
+  macAddressController.displayFailureAlerts
+);
+router.post(
   '/display-connected-devices',
   macAddressController.displayConnectedDevices
 );

@@ -20,6 +20,7 @@ import NetworkRequests from './components/NetworkRequests.js';
 import AddSystem from './components/AddSystem';
 import ViewLogs from './components/ViewLogs';
 import ViewGraphs from './components/ViewGraphs.js';
+import FailureAlerts from './components/FailureAlerts.js';
 // import PowerBIDashboard from './components/PowerBIDashboard.js';
 import CheatingDevices from './components/CheatingDevices.js';
 import CheatingDevicesGraphs from './components/CheatingDevicesGraphs.js';
@@ -38,6 +39,7 @@ function App() {
         <Route path="/documentation" element={<Documentation />} />
         <Route path="/functionality" element={<Functionality />} />
         <Route path="/check-system-health" element={<CheckSystemHealth />} />
+        <Route path="/view-failure-alerts" element={<FailureAlerts />} />
         <Route path="/view-browser-history" element={<BrowserHistory />} />
         <Route path="/view-connected-devices" element={<ConnectedDevices />} />
         <Route path="/view-network-details" element={<NetworkDetails />} />
