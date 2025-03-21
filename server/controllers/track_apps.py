@@ -292,7 +292,7 @@ def collect_connected_devices(mac_address):
             usage = psutil.disk_usage(partition.mountpoint)
             storage_info = {
                 'timestamp': current_time,
-                'Device Type': 'Secondary Storage',
+                'Device Type': 'Pen drive',
                 'Device Name': partition.device,
                 'Mount Point': partition.mountpoint,
                 'File System Type': partition.fstype,

@@ -67,7 +67,7 @@ const ConnectedDevices = () => {
 
       let isPenDriveDetected = false;
       response.data.forEach((device) => {
-        if (device['Device Type'] === 'Secondary Storage') {
+        if (device['Device Type'] === 'Pen drive') {
           isPenDriveDetected = true;
           if (!penDriveDetected) {
             audio.play();
