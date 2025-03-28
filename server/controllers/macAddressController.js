@@ -122,61 +122,63 @@ exports.getTracking = async (req, res) => {
 };
 
 exports.deleteLogs = async (req, res) => {
-  // Validate request
-  if (
-    !req.body ||
-    !req.body.macAddress ||
-    !req.body.startTimestamp ||
-    !req.body.endTimestamp
-  ) {
-    return res.status(400).json({
-      success: false,
-      message:
-        'Missing required parameters: macAddress, startTimestamp, endTimestamp',
-    });
+  console.log(req.body);
+  const { macAddress, startTimestamp, endTimestamp } = req.body;
+
+  if (!macAddress || !startTimestamp || !endTimestamp) {
+    return res.status(400).json({ message: 'Missing required parameters' });
   }
 
-  const { macAddress, startTimestamp, endTimestamp } = req.body;
   const client = new MongoClient(MONGODB_URI);
-
   try {
-    // Validate timestamps
+    await client.connect();
+
+    const database = client.db(macAddress);
+    const collection = database.collection('process_details_' + macAddress);
+
+    // Convert string timestamps to Date objects
     const startDate = new Date(startTimestamp);
     const endDate = new Date(endTimestamp);
 
-    if (isNaN(startDate.getTime()))
-      throw new Error('Invalid startTimestamp format');
-    if (isNaN(endDate.getTime()))
-      throw new Error('Invalid endTimestamp format');
-    if (startDate > endDate)
-      throw new Error('startTimestamp must be before endTimestamp');
+    // Validate dates
+    if (isNaN(startDate.getTime())) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid start timestamp format' });
+    }
+    if (isNaN(endDate.getTime())) {
+      return res.status(400).json({ message: 'Invalid end timestamp format' });
+    }
+    if (startDate > endDate) {
+      return res
+        .status(400)
+        .json({ message: 'Start timestamp must be before end timestamp' });
+    }
 
-    // Connect and delete
-    await client.connect();
-    const collection = client
-      .db(macAddress)
-      .collection(`process_details_${macAddress}`);
-
-    const result = await collection.deleteMany({
-      timestamp: { $gte: startDate, $lte: endDate },
+    // Delete logs within the specified time range
+    const deleteResult = await collection.deleteMany({
+      timestamp: {
+        $gte: startDate,
+        $lte: endDate,
+      },
     });
 
-    return res.json({
+    console.log(`Deleted ${deleteResult.deletedCount} documents`);
+    res.json({
       success: true,
-      deletedCount: result.deletedCount,
-      message: `Deleted ${result.deletedCount} logs successfully`,
+      deletedCount: deleteResult.deletedCount,
+      message: `Successfully deleted ${deleteResult.deletedCount} logs`,
     });
   } catch (error) {
-    console.error('Delete error:', error);
-    return res.status(500).json({
+    console.error('Error deleting logs:', error);
+    res.status(500).json({
       success: false,
       message: 'Failed to delete logs',
       error: error.message,
     });
   } finally {
-    await client
-      .close()
-      .catch((err) => console.error('Failed to close connection:', err));
+    // Close the database connection
+    await client.close();
   }
 };
 
