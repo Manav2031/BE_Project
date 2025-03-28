@@ -153,7 +153,7 @@ const CheatingDevicesGraphs = () => {
           />
         </label>
       </div>
-      <div className="chart-container">
+      <div className="stackedchart-container">
         {filteredGraphData.length > 0 ? (
           <Bar
             data={stackedBarChartData}
