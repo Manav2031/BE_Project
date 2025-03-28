@@ -16,8 +16,14 @@ connectDb();
 //rest object
 const app = express();
 
+// Configure allowed origins
+const allowedOrigins = [
+  'https://electron-eye.vercel.app',
+  'http://localhost:3000',
+];
+
 const corsOptions = {
-  origin: '*',
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
