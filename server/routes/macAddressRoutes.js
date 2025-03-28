@@ -44,5 +44,9 @@ router.get(
   '/display-cheating-devices',
   macAddressController.displayCheatingDevices
 );
+router.post(
+  '/deleteCheatingDevices',
+  macAddressController.deleteCheatingDevices
+);
 router.post('/shutdown-system', macAddressController.shutdownSystem);
 module.exports = router;

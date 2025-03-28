@@ -823,6 +823,82 @@ exports.displayCheatingDevices = async (req, res) => {
   }
 };
 
+exports.deleteCheatingDevices = async (req, res) => {
+  const { startTimestamp, endTimestamp } = req.body;
+
+  if (!startTimestamp || !endTimestamp) {
+    return res.status(400).json({ message: 'Missing required parameters' });
+  }
+
+  const client = new MongoClient(MONGODB_URI);
+  try {
+    await client.connect();
+    const collection = client
+      .db('cheating_devices')
+      .collection('cheating_devices');
+
+    // Convert input to database timestamp format (YYYY-MM-DD HH:mm:ss)
+    const toDBFormat = (dateStr) => {
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}-${(d.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')} ${d
+        .getHours()
+        .toString()
+        .padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d
+        .getSeconds()
+        .toString()
+        .padStart(2, '0')}`;
+    };
+
+    const dbStart = toDBFormat(startTimestamp);
+    const dbEnd = toDBFormat(endTimestamp);
+
+    // Debug: Verify actual time range in database
+    const firstLog = await collection.findOne({}, { sort: { timestamp: 1 } });
+    const lastLog = await collection.findOne({}, { sort: { timestamp: -1 } });
+
+    // Perform deletion
+    const result = await collection.deleteMany({
+      timestamp: {
+        $gte: dbStart,
+        $lte: dbEnd,
+      },
+    });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No logs found in specified range',
+        details: {
+          requestedRange: { start: dbStart, end: dbEnd },
+          availableRange: {
+            earliest: firstLog?.timestamp,
+            latest: lastLog?.timestamp,
+          },
+          suggestion:
+            'Try expanding your time range or verify timestamp format',
+        },
+      });
+    }
+
+    return res.json({
+      success: true,
+      deletedCount: result.deletedCount,
+      timeRange: { start: dbStart, end: dbEnd },
+    });
+  } catch (error) {
+    console.error('Delete error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Delete operation failed',
+      error: error.message,
+    });
+  } finally {
+    await client.close();
+  }
+};
+
 exports.shutdownSystem = async (req, res) => {
   let shutdownCommand = '';
 
