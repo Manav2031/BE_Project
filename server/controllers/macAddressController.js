@@ -129,74 +129,71 @@ exports.deleteLogs = async (req, res) => {
     return res.status(400).json({ message: 'Missing required parameters' });
   }
 
-  const client = new MongoClient(MONGODB_URI, {
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 30000,
-  });
-
+  const client = new MongoClient(MONGODB_URI);
   try {
     await client.connect();
 
     const database = client.db(macAddress);
     const collection = database.collection('process_details_' + macAddress);
 
-    // Convert to ISO format and then to Date objects
-    const startDate = new Date(new Date(startTimestamp).toISOString());
-    const endDate = new Date(new Date(endTimestamp).toISOString());
+    // Convert to the database's timestamp format (YYYY-MM-DD HH:mm:ss)
+    const formatForDB = (date) => {
+      const d = new Date(date);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+        2,
+        '0'
+      )}-${String(d.getDate()).padStart(2, '0')} ${String(
+        d.getHours()
+      ).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(
+        d.getSeconds()
+      ).padStart(2, '0')}`;
+    };
 
-    // Debug: Check the actual date objects being used
-    console.log('Searching between:', {
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
+    const startDateStr = formatForDB(startTimestamp);
+    const endDateStr = formatForDB(endTimestamp);
+
+    console.log('Formatted timestamps for query:', {
+      start: startDateStr,
+      end: endDateStr,
     });
-
-    // First find some sample documents to verify timestamp format
-    const sampleDoc = await collection.findOne({}, { sort: { timestamp: -1 } });
-    console.log(
-      'Sample document timestamp:',
-      sampleDoc?.timestamp,
-      'Type:',
-      typeof sampleDoc?.timestamp
-    );
 
     // Count documents in range
     const count = await collection.countDocuments({
       timestamp: {
-        $gte: startDate,
-        $lte: endDate,
+        $gte: startDateStr,
+        $lte: endDateStr,
       },
     });
-    console.log(`Found ${count} documents to delete`);
 
     if (count === 0) {
+      // Get min and max timestamps from DB for debugging
+      const firstDoc = await collection.findOne({}, { sort: { timestamp: 1 } });
+      const lastDoc = await collection.findOne({}, { sort: { timestamp: -1 } });
+
       return res.status(404).json({
         success: false,
         message: 'No documents found in specified time range',
-        query: {
-          start: startDate.toISOString(),
-          end: endDate.toISOString(),
+        queryRange: { start: startDateStr, end: endDateStr },
+        dbRange: {
+          earliest: firstDoc?.timestamp,
+          latest: lastDoc?.timestamp,
         },
-        sampleTimestamp: sampleDoc?.timestamp,
       });
     }
 
     // Perform deletion
     const deleteResult = await collection.deleteMany({
       timestamp: {
-        $gte: startDate,
-        $lte: endDate,
+        $gte: startDateStr,
+        $lte: endDateStr,
       },
     });
 
-    console.log(`Deleted ${deleteResult.deletedCount} documents`);
     return res.json({
       success: true,
       deletedCount: deleteResult.deletedCount,
       message: `Deleted ${deleteResult.deletedCount} logs`,
-      timeRange: {
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      },
+      timeRange: { start: startDateStr, end: endDateStr },
     });
   } catch (error) {
     console.error('Delete error:', error);
@@ -204,12 +201,9 @@ exports.deleteLogs = async (req, res) => {
       success: false,
       message: 'Delete operation failed',
       error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   } finally {
-    await client
-      .close()
-      .catch((err) => console.error('Error closing connection:', err));
+    await client.close();
   }
 };
 
