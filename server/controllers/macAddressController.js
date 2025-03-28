@@ -735,7 +735,7 @@ exports.deleteConnectedDevices = async (req, res) => {
     await client.connect();
     const collection = client
       .db(macAddress)
-      .collection('connected_devices_details' + macAddress);
+      .collection('connected_devices_details_' + macAddress);
 
     // Convert input to database timestamp format (YYYY-MM-DD HH:mm:ss)
     const toDBFormat = (dateStr) => {
