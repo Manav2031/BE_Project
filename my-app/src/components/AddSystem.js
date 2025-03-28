@@ -72,6 +72,22 @@ const CheatButton = styled.button`
   }
 `;
 
+const LogoutButton = styled.button`
+  padding: 0.8rem 1.5rem;
+  margin-top: 2rem;
+  width: 50%;
+  font-size: 1.2rem;
+  color: #fff;
+  background-color: #ff4757; /* Red color for logout */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: #ff6b81; /* Lighter red on hover */
+  }
+`;
+
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -154,6 +170,31 @@ function AddSystem() {
     navigate('/view-cheating-devices-graphs');
   };
 
+  const handleLogout = async () => {
+    try {
+      // Call the logout API endpoint
+      await axios.post(
+        'https://electron-eye.onrender.com/api/logout',
+        {}, // empty body
+        {
+          withCredentials: true, // Important for cookie-based auth
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // Clear any client-side storage (if used)
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Navigate to login page
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <Section>
       <FormContainer>
@@ -207,6 +248,7 @@ function AddSystem() {
         {' '}
         View Graph of Cheating Devices{' '}
       </CheatButton>
+      <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
     </Section>
   );
 }
