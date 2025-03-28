@@ -178,9 +178,6 @@ function AddSystem() {
         {}, // empty body
         {
           withCredentials: true, // Important for cookie-based auth
-          headers: {
-            'Content-Type': 'application/json',
-          },
         }
       );
 
