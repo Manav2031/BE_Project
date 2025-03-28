@@ -122,7 +122,6 @@ exports.getTracking = async (req, res) => {
 };
 
 exports.deleteLogs = async (req, res) => {
-  console.log('Request body:', req.body);
   const { macAddress, startTimestamp, endTimestamp } = req.body;
 
   if (!macAddress || !startTimestamp || !endTimestamp) {
@@ -132,68 +131,59 @@ exports.deleteLogs = async (req, res) => {
   const client = new MongoClient(MONGODB_URI);
   try {
     await client.connect();
+    const collection = client
+      .db(macAddress)
+      .collection('process_details_' + macAddress);
 
-    const database = client.db(macAddress);
-    const collection = database.collection('process_details_' + macAddress);
-
-    // Convert to the database's timestamp format (YYYY-MM-DD HH:mm:ss)
-    const formatForDB = (date) => {
-      const d = new Date(date);
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-        2,
-        '0'
-      )}-${String(d.getDate()).padStart(2, '0')} ${String(
-        d.getHours()
-      ).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(
-        d.getSeconds()
-      ).padStart(2, '0')}`;
+    // Convert input to database timestamp format (YYYY-MM-DD HH:mm:ss)
+    const toDBFormat = (dateStr) => {
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}-${(d.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')} ${d
+        .getHours()
+        .toString()
+        .padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d
+        .getSeconds()
+        .toString()
+        .padStart(2, '0')}`;
     };
 
-    const startDateStr = formatForDB(startTimestamp);
-    const endDateStr = formatForDB(endTimestamp);
+    const dbStart = toDBFormat(startTimestamp);
+    const dbEnd = toDBFormat(endTimestamp);
 
-    console.log('Formatted timestamps for query:', {
-      start: startDateStr,
-      end: endDateStr,
-    });
+    // Debug: Verify actual time range in database
+    const firstLog = await collection.findOne({}, { sort: { timestamp: 1 } });
+    const lastLog = await collection.findOne({}, { sort: { timestamp: -1 } });
 
-    // Count documents in range
-    const count = await collection.countDocuments({
+    // Perform deletion
+    const result = await collection.deleteMany({
       timestamp: {
-        $gte: startDateStr,
-        $lte: endDateStr,
+        $gte: dbStart,
+        $lte: dbEnd,
       },
     });
 
-    if (count === 0) {
-      // Get min and max timestamps from DB for debugging
-      const firstDoc = await collection.findOne({}, { sort: { timestamp: 1 } });
-      const lastDoc = await collection.findOne({}, { sort: { timestamp: -1 } });
-
+    if (result.deletedCount === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No documents found in specified time range',
-        queryRange: { start: startDateStr, end: endDateStr },
-        dbRange: {
-          earliest: firstDoc?.timestamp,
-          latest: lastDoc?.timestamp,
+        message: 'No logs found in specified range',
+        details: {
+          requestedRange: { start: dbStart, end: dbEnd },
+          availableRange: {
+            earliest: firstLog?.timestamp,
+            latest: lastLog?.timestamp,
+          },
+          suggestion:
+            'Try expanding your time range or verify timestamp format',
         },
       });
     }
 
-    // Perform deletion
-    const deleteResult = await collection.deleteMany({
-      timestamp: {
-        $gte: startDateStr,
-        $lte: endDateStr,
-      },
-    });
-
     return res.json({
       success: true,
-      deletedCount: deleteResult.deletedCount,
-      message: `Deleted ${deleteResult.deletedCount} logs`,
-      timeRange: { start: startDateStr, end: endDateStr },
+      deletedCount: result.deletedCount,
+      timeRange: { start: dbStart, end: dbEnd },
     });
   } catch (error) {
     console.error('Delete error:', error);
