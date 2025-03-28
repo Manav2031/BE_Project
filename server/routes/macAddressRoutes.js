@@ -6,6 +6,7 @@ router.post('/check-mac', macAddressController.checkMACAddress);
 router.post('/startTracking', macAddressController.startTracking);
 router.post('/stopTracking', macAddressController.stopTracking);
 router.post('/getTracking', macAddressController.getTracking);
+router.post('/deleteLogs', macAddressController.deleteLogs);
 router.post(
   '/display-browser-history',
   macAddressController.displayBrowserHistory

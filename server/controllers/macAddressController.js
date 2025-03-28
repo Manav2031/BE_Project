@@ -121,6 +121,65 @@ exports.getTracking = async (req, res) => {
   }
 };
 
+exports.deleteLogs = async (req, res) => {
+  // Validate request
+  if (
+    !req.body ||
+    !req.body.macAddress ||
+    !req.body.startTimestamp ||
+    !req.body.endTimestamp
+  ) {
+    return res.status(400).json({
+      success: false,
+      message:
+        'Missing required parameters: macAddress, startTimestamp, endTimestamp',
+    });
+  }
+
+  const { macAddress, startTimestamp, endTimestamp } = req.body;
+  const client = new MongoClient(process.env.MONGODB_URI);
+
+  try {
+    // Validate timestamps
+    const startDate = new Date(startTimestamp);
+    const endDate = new Date(endTimestamp);
+
+    if (isNaN(startDate.getTime()))
+      throw new Error('Invalid startTimestamp format');
+    if (isNaN(endDate.getTime()))
+      throw new Error('Invalid endTimestamp format');
+    if (startDate > endDate)
+      throw new Error('startTimestamp must be before endTimestamp');
+
+    // Connect and delete
+    await client.connect();
+    const collection = client
+      .db(macAddress)
+      .collection(`process_details_${macAddress}`);
+
+    const result = await collection.deleteMany({
+      timestamp: { $gte: startDate, $lte: endDate },
+    });
+
+    return res.json({
+      success: true,
+      deletedCount: result.deletedCount,
+      message: `Deleted ${result.deletedCount} logs successfully`,
+    });
+  } catch (error) {
+    console.error('Delete error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to delete logs',
+      error: error.message,
+    });
+  } finally {
+    await client
+      .close()
+      .catch((err) => console.error('Failed to close connection:', err));
+  }
+};
+
 exports.displayBrowserHistory = async (req, res) => {
   console.log(req.body);
   const { macAddress } = req.body;
