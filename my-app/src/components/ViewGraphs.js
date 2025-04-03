@@ -38,10 +38,10 @@ const GraphsHeading = styled.h2`
   color: #333;
   text-align: center;
   margin-top: 80px;
-  margin-bottom: 20px;
+  margin-bottom: -100px;
   padding-bottom: 10px;
-  border-bottom: 2px solid #968df0;
-  width: 80%;
+  border-bottom: 2px solid #007bff;
+  width: 100%;
 `;
 
 const ViewGraphs = () => {
