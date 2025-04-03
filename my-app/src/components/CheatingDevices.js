@@ -122,17 +122,17 @@ const CheatingDevices = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Function to filter unique types of cheating
-  const filterUniqueCheatingTypes = (data) => {
-    const uniqueTypesMap = new Map();
+  // const filterUniqueCheatingTypes = (data) => {
+  //   const uniqueTypesMap = new Map();
 
-    data.forEach((item) => {
-      if (!uniqueTypesMap.has(item.type_of_cheating)) {
-        uniqueTypesMap.set(item.type_of_cheating, item);
-      }
-    });
+  //   data.forEach((item) => {
+  //     if (!uniqueTypesMap.has(item.type_of_cheating)) {
+  //       uniqueTypesMap.set(item.type_of_cheating, item);
+  //     }
+  //   });
 
-    return Array.from(uniqueTypesMap.values());
-  };
+  //   return Array.from(uniqueTypesMap.values());
+  // };
 
   // Function to fetch tracking data
   const fetchTrackingData = async () => {
@@ -141,9 +141,9 @@ const CheatingDevices = () => {
         'https://electron-eye.onrender.com/api/display-cheating-devices'
       );
       // Filter data to display unique types of cheating
-      const uniqueCheatingTypes = filterUniqueCheatingTypes(response.data);
-      setTrackStatus(uniqueCheatingTypes);
-      setFilteredData(uniqueCheatingTypes);
+      // const uniqueCheatingTypes = filterUniqueCheatingTypes(response.data);
+      setTrackStatus(response.data);
+      setFilteredData(response.data);
     } catch (error) {
       console.error('Error fetching tracking data:', error);
     }
