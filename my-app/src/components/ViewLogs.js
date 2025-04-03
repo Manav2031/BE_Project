@@ -183,39 +183,7 @@ const ViewLogs = () => {
   };
 
   // Delete logs within a specific time range
-  // const deleteLogsByTimestamp = async () => {
-  //   if (!deleteStartTimestamp || !deleteEndTimestamp) {
-  //     alert('Please select both start and end timestamps for deletion');
-  //     return;
-  //   }
-
-  //   if (
-  //     window.confirm(
-  //       'Are you sure you want to delete logs in this time range? This action cannot be undone.'
-  //     )
-  //   ) {
-  //     setIsDeleting(true);
-  //     try {
-  //       await axios.post('https://electron-eye.onrender.com/api/deleteLogs', {
-  //         macAddress: macAddress,
-  //         startTimestamp: deleteStartTimestamp,
-  //         endTimestamp: deleteEndTimestamp,
-  //       });
-  //       alert('Logs deleted successfully');
-  //       fetchTrackingData(); // Refresh the data
-  //     } catch (error) {
-  //       console.error('Error deleting logs:', error);
-  //       alert('Failed to delete logs');
-  //     } finally {
-  //       setIsDeleting(false);
-  //       setDeleteStartTimestamp('');
-  //       setDeleteEndTimestamp('');
-  //     }
-  //   }
-  // };
-
-  // Delete logs from the table view (frontend only)
-  const deleteLogsByTimestamp = () => {
+  const deleteLogsByTimestamp = async () => {
     if (!deleteStartTimestamp || !deleteEndTimestamp) {
       alert('Please select both start and end timestamps for deletion');
       return;
@@ -223,26 +191,21 @@ const ViewLogs = () => {
 
     if (
       window.confirm(
-        'Are you sure you want to remove these logs from view? This action will not delete them from the database.'
+        'Are you sure you want to delete logs in this time range? This action cannot be undone.'
       )
     ) {
       setIsDeleting(true);
       try {
-        const startDate = new Date(deleteStartTimestamp);
-        const endDate = new Date(deleteEndTimestamp);
-
-        // Filter out logs that fall within the deletion range
-        const updatedData = trackStatus.filter((item) => {
-          const itemDate = new Date(item.timestamp);
-          return itemDate < startDate || itemDate > endDate;
+        await axios.post('https://electron-eye.onrender.com/api/deleteLogs', {
+          macAddress: macAddress,
+          startTimestamp: deleteStartTimestamp,
+          endTimestamp: deleteEndTimestamp,
         });
-
-        setTrackStatus(updatedData);
-        setFilteredData(updatedData);
-        alert('Logs removed from view successfully');
+        alert('Logs deleted successfully');
+        fetchTrackingData(); // Refresh the data
       } catch (error) {
-        console.error('Error removing logs from view:', error);
-        alert('Failed to remove logs from view');
+        console.error('Error deleting logs:', error);
+        alert('Failed to delete logs');
       } finally {
         setIsDeleting(false);
         setDeleteStartTimestamp('');
@@ -250,6 +213,43 @@ const ViewLogs = () => {
       }
     }
   };
+
+  // Delete logs from the table view (frontend only)
+  // const deleteLogsByTimestamp = () => {
+  //   if (!deleteStartTimestamp || !deleteEndTimestamp) {
+  //     alert('Please select both start and end timestamps for deletion');
+  //     return;
+  //   }
+
+  //   if (
+  //     window.confirm(
+  //       'Are you sure you want to remove these logs from view? This action will not delete them from the database.'
+  //     )
+  //   ) {
+  //     setIsDeleting(true);
+  //     try {
+  //       const startDate = new Date(deleteStartTimestamp);
+  //       const endDate = new Date(deleteEndTimestamp);
+
+  //       // Filter out logs that fall within the deletion range
+  //       const updatedData = trackStatus.filter((item) => {
+  //         const itemDate = new Date(item.timestamp);
+  //         return itemDate < startDate || itemDate > endDate;
+  //       });
+
+  //       setTrackStatus(updatedData);
+  //       setFilteredData(updatedData);
+  //       alert('Logs removed from view successfully');
+  //     } catch (error) {
+  //       console.error('Error removing logs from view:', error);
+  //       alert('Failed to remove logs from view');
+  //     } finally {
+  //       setIsDeleting(false);
+  //       setDeleteStartTimestamp('');
+  //       setDeleteEndTimestamp('');
+  //     }
+  //   }
+  // };
 
   return (
     <Container>
@@ -294,13 +294,13 @@ const ViewLogs = () => {
           />
         </FilterGroup>
 
-        {/* <DeleteButton onClick={deleteLogsByTimestamp} disabled={isDeleting}>
-          {isDeleting ? 'Deleting...' : 'Delete Logs'}
-        </DeleteButton> */}
-
         <DeleteButton onClick={deleteLogsByTimestamp} disabled={isDeleting}>
-          {isDeleting ? 'Removing...' : 'Remove From View'}
+          {isDeleting ? 'Deleting...' : 'Delete Logs'}
         </DeleteButton>
+
+        {/* <DeleteButton onClick={deleteLogsByTimestamp} disabled={isDeleting}>
+          {isDeleting ? 'Removing...' : 'Remove From View'}
+        </DeleteButton> */}
       </FilterContainer>
 
       <TableContainer>

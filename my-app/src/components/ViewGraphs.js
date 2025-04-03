@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Bar, Scatter, Line, Doughnut, PolarArea } from 'react-chartjs-2';
+import styled from 'styled-components';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -32,6 +33,16 @@ ChartJS.register(
   Legend,
   Filler
 );
+
+const GraphsHeading = styled.h2`
+  color: #333;
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #968df0;
+  width: 80%;
+`;
 
 const ViewGraphs = () => {
   const [processData, setProcessData] = useState([]);
@@ -513,6 +524,7 @@ const ViewGraphs = () => {
 
   return (
     <div className="graph-container">
+      <GraphsHeading>Graphs for MAC Address: {macAddress}</GraphsHeading>
       {/* Bar Chart Section */}
       <div className="timestamp-filters" style={{ marginTop: '100px' }}>
         <h3 className="h3bar">Bar Chart Filters</h3>

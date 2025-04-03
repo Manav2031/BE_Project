@@ -113,6 +113,15 @@ const DeleteButton = styled(ActionButton)`
   }
 `;
 
+const TableHeading = styled.h2`
+  margin: 0;
+  padding: 10px 0;
+  color: #333;
+  text-align: center;
+  width: 100%;
+  border-bottom: 2px solid #007bff;
+`;
+
 const NetworkRequests = () => {
   const [trackStatus, setTrackStatus] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -257,6 +266,9 @@ const NetworkRequests = () => {
       </FilterContainer>
 
       <TableContainer>
+        <TableHeading>
+          Network Requests Table for MAC Address: {macAddress}
+        </TableHeading>
         {Array.isArray(filteredData) && filteredData.length > 0 ? (
           <Table>
             <thead>

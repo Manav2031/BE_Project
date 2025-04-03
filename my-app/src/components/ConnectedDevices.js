@@ -115,6 +115,15 @@ const DeleteButton = styled(ActionButton)`
   }
 `;
 
+const TableHeading = styled.h2`
+  margin: 0;
+  padding: 10px 0;
+  color: #333;
+  text-align: center;
+  width: 100%;
+  border-bottom: 2px solid #007bff;
+`;
+
 const ConnectedDevices = () => {
   const [devices, setDevices] = useState([]);
   const [penDriveDetected, setPenDriveDetected] = useState(false);
@@ -299,6 +308,9 @@ const ConnectedDevices = () => {
       </FilterContainer>
 
       <TableContainer>
+        <TableHeading>
+          Connected Devices Table for MAC Address: {macAddress}
+        </TableHeading>
         {Array.isArray(filteredData) && filteredData.length > 0 ? (
           <Table>
             <thead>
