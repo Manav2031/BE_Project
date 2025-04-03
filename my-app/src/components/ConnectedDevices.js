@@ -146,7 +146,7 @@ const ConnectedDevices = () => {
           isPenDriveDetected = true;
           if (!penDriveDetected) {
             audio.play();
-            toast.error('Pen drive detected!', {
+            toast.error(`Pen drive detected on ${macAddress}`, {
               position: 'top-center',
               autoClose: 10000,
               hideProgressBar: false,
@@ -163,7 +163,7 @@ const ConnectedDevices = () => {
       if (!isPenDriveDetected && penDriveDetected) {
         audio.pause();
         audio.currentTime = 0;
-        toast.info('Pen drive removed!', {
+        toast.info(`Pen drive removed from ${macAddress}`, {
           position: 'top-center',
           autoClose: 10000,
           hideProgressBar: false,
