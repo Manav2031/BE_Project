@@ -1,0 +1,10 @@
+psutil
+pywifi
+scikit-learn
+pymongo
+watchdog
+scapy
+browser-history
+numpy
+pandas
+python-dotenv

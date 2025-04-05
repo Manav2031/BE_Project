@@ -1,8 +1,6 @@
 import psutil
-import platform
 import socket
-import winsound
-import pywifi
+import subprocess
 import time
 from datetime import datetime
 from sklearn.metrics import r2_score
@@ -15,8 +13,8 @@ from scapy.all import sniff, IP
 from browser_history import get_history
 import numpy as np
 import pandas as pd
-from dotenv import load_dotenv  # Import the dotenv module
-import os  # Import the os module to access environment variables
+from dotenv import load_dotenv
+import os
 
 # Load environment variables from .env file
 load_dotenv()
@@ -25,23 +23,11 @@ load_dotenv()
 mongo_url = os.getenv('MONGO_URL')  # Read MongoDB URI from environment variables
 client = MongoClient(mongo_url)
 
-
-# Define system-related process names for each OS
-system_processes_windows = [
-    'System', 'Idle', 'svchost.exe', 'csrss.exe', 'winlogon.exe', 'services.exe',
-    'lsass.exe', 'smss.exe', 'Registry', 'MemCompression', 'dwm.exe'
-]
-
+# Define system-related process names for Linux
 system_processes_linux = [
-    'init', 'kthreadd', 'ksoftirqd', 'migration', 'watchdog', 'kworker', 'rcu', 
-    'systemd', 'kdevtmpfs', 'bioset', 'kblockd', 'ata_sff', 'khubd', 'kseriod', 
+    'init', 'kthreadd', 'ksoftirqd', 'migration', 'watchdog', 'kworker', 'rcu',
+    'systemd', 'kdevtmpfs', 'bioset', 'kblockd', 'ata_sff', 'khubd', 'kseriod',
     'md', 'jbd2', 'ext4', 'kvm', 'kswapd', 'fsnotify', 'kthrotld', 'acpi_thermal_pm'
-]
-
-system_processes_macos = [
-    'kernel_task', 'launchd', 'syslogd', 'UserEventAgent', 'universalaccessd',
-    'WindowServer', 'kextd', 'fseventsd', 'mds', 'mdworker', 'distnoted', 
-    'cfprefsd', 'securityd', 'systemstats', 'coreaudiod', 'hidd'
 ]
 
 # Minimum PID for user processes (system processes typically have low PIDs)
@@ -58,34 +44,43 @@ def get_mac_address():
                     return addr.address.replace(':', '_').upper()
     return None  # Return None if no valid MAC address is found
 
+def close_all_browsers():
+    """Close all running browser processes on Linux."""
+    # Define browser process names for Linux
+    browsers = [
+        'chrome',         # Alternative Chrome process name
+        'firefox',        # Firefox
+        'chromium',       # Chromium
+        'opera',          # Opera
+        'brave',          # Brave Browser
+        'vivaldi',        # Vivaldi
+        'epiphany',       # Epiphany (GNOME Web)
+        'safari'          # Safari (if installed via Wine or other means)
+    ]
+   
+    # Iterate through all running processes
+    for proc in psutil.process_iter(attrs=['pid', 'name']):
+        try:
+            process_name = proc.info['name'].lower()  # Convert process name to lowercase for comparison
+            if process_name in browsers:  # Check if the process is one of the browsers
+                proc.terminate()  # Terminate the browser process
+                print(f"Terminated browser process: {proc.info['name']} (PID: {proc.info['pid']})")
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass  # Handle processes that might terminate while we're iterating
+
 def get_running_processes():
     """Retrieve a list of currently running processes excluding OS and system-related processes."""
-    
-    # Detect the current operating system
-    current_os = platform.system().lower()
-    
-    # Choose system process list based on the OS
-    if current_os == 'windows':
-        system_processes = system_processes_windows
-    elif current_os in ['linux', 'fedora']:
-        system_processes = system_processes_linux
-    elif current_os == 'darwin':
-        system_processes = system_processes_macos
-    else:
-        system_processes = []  # For unsupported OS, no filtering
-
     running_processes = []
-    
+   
     for process in psutil.process_iter(['pid', 'name', 'create_time', 'username']):
         try:
             # Exclude system processes by name or PID (system processes often have low PIDs)
-            if process.info['name'] not in system_processes and process.info['pid'] > min_pid_user:
+            if process.info['name'] not in system_processes_linux and process.info['pid'] > min_pid_user:
                 running_processes.append((process.info['pid'], process.info['name'], process.info['create_time']))
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             continue  # Handle processes that may terminate during iteration
-    
+   
     return running_processes
-
 
 def detect_git_clone(mac_address):
     """Detect if any process is executing the 'git clone' command."""
@@ -95,7 +90,7 @@ def detect_git_clone(mac_address):
                 # Check if the process is 'git' and has 'clone' in its command-line arguments
                 if process.info['name'] in ['git.exe','git']:
                     print(f"Cheating detected! Git clone command executed by PID {process.info['pid']}.")
-                    
+                   
                     # Insert into cheating_devices collection
                     cheating_collection.insert_one({
                         'mac_address': mac_address,  # Replace with actual MAC address if available
@@ -108,33 +103,6 @@ def detect_git_clone(mac_address):
                     print(f"Terminated process with PID {process.info['pid']}.")
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
-
-def play_high_volume_sound():
-    """Play a high volume sound when a browser is closed."""
-    frequency = 2500  # Set the frequency of the sound (in Hz)
-    duration = 1000   # Set the duration of the sound (in milliseconds)
-    winsound.Beep(frequency, duration)  # Play the sound on Windows
-
-def close_all_browsers():
-    # Define browser process names for different operating systems
-    if platform.system().lower() == 'windows':
-        browsers = ['firefox.exe', 'msedge.exe', 'safari.exe']  # For Windows
-    elif platform.system().lower() == 'darwin':  # macOS
-        browsers = ['Google Chrome', 'firefox', 'safari']
-    elif platform.system().lower() in ['linux', 'fedora']:  # Linux and Fedora
-        browsers = ['google-chrome', 'firefox', 'chromium', 'opera', 'safari']  # Modify based on your browser preferences
-    else:
-        browsers = []  # For unsupported OS, no browser processes to close
-    
-    # Iterate through all running processes
-    for proc in psutil.process_iter(attrs=['pid', 'name']):
-        try:
-            if proc.info['name'] in browsers:  # Check if the process is one of the browsers
-                proc.terminate()  # Terminate the browser process
-                print(f"Terminated browser process: {proc.info['name']} (PID: {proc.info['pid']})")
-                play_high_volume_sound()
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass  # Handle processes that might terminate while we're iterating
 
 def resolve_ip_to_host(ip_address):
     """Resolve an IP address to a hostname."""
@@ -175,7 +143,6 @@ def start_network_capture(mac_address):
     print("Starting network packet capture...")
     sniff(filter="ip", prn=lambda x: capture_network_requests(x, mac_address), store=0)
 
-
 def collect_network_details(mac_address):
     """Collect and store network details in MongoDB."""
     db = client[mac_address]
@@ -211,8 +178,8 @@ def collect_connected_devices(mac_address):
     db = client[mac_address]
     collection = db[f'connected_devices_details_{mac_address}']
 
-    # Load previously stored devices from the database
-    previous_devices = {doc['Device Name']: doc for doc in collection.find()}
+    # Load previously stored devices from the database, filtering out documents without 'Device Name'
+    previous_devices = {doc['Device Name']: doc for doc in collection.find() if 'Device Name' in doc}
 
     # Get current time
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -221,96 +188,71 @@ def collect_connected_devices(mac_address):
     connected_devices = []
     pen_drive_detected = False
 
-    # Detect platform
-    current_os = platform.system().lower()
+    # Collect Wi-Fi devices using nmcli
+    try:
+        result = subprocess.run(['nmcli', '-t', '-f', 'SSID,BSSID,SIGNAL', 'dev', 'wifi'], stdout=subprocess.PIPE)
+        wifi_devices = result.stdout.decode('utf-8').split('\n')
 
-    # Collect Wi-Fi devices based on platform
-    if current_os == 'windows':
-        wifi = pywifi.PyWiFi()
-        iface = wifi.interfaces()[0]
-        iface.scan()
-        time.sleep(2)
-        scan_results = iface.scan_results()
+        print("Raw Wi-Fi devices output:")  # Debugging
+        print(wifi_devices)
 
-        # Collect Wi-Fi devices
-        for device in scan_results:
-            cleaned_device_name = device.ssid.strip()
-            cleaned_mac_address = device.bssid.replace(':', '').upper()
-            device_info = {
-                'timestamp': current_time,
-                'Device Type': 'Wi-Fi',
-                'Device Name': cleaned_device_name,
-                'MAC Address': cleaned_mac_address,
-                'Signal Strength': device.signal
-            }
-            connected_devices.append(device_info)
+        for device in wifi_devices:
+            if device:
+                try:
+                    ssid, bssid, signal = device.split(':')
+                    cleaned_device_name = ssid.strip()
+                    cleaned_mac_address = bssid.replace(':', '').upper()
+                    device_info = {
+                        'timestamp': current_time,
+                        'Device Type': 'Wi-Fi',
+                        'Device Name': cleaned_device_name,
+                        'MAC Address': cleaned_mac_address,
+                        'Signal Strength': int(signal)
+                    }
+                    connected_devices.append(device_info)
+                except ValueError as e:
+                    print(f"Error parsing Wi-Fi device: {device}. Error: {e}")
+    except Exception as e:
+        print(f"Error collecting Wi-Fi devices: {e}")
 
-    elif current_os in ['linux', 'fedora']:
-        # On Linux/Fedora, use `iwconfig` to fetch Wi-Fi details (using `pywifi` as well for simplicity)
-        wifi = pywifi.PyWiFi()
-        iface = wifi.interfaces()[0]
-        iface.scan()
-        time.sleep(2)
-        scan_results = iface.scan_results()
+    # Collect removable storage devices using lsblk
+    try:
+        result = subprocess.run(['lsblk', '-o', 'NAME,SIZE,TYPE,MOUNTPOINT'], stdout=subprocess.PIPE)
+        lsblk_devices = result.stdout.decode('utf-8').split('\n')[1:]  # Skip the header row
 
-        # Collect Wi-Fi devices
-        for device in scan_results:
-            cleaned_device_name = device.ssid.strip()
-            cleaned_mac_address = device.bssid.replace(':', '').upper()
-            device_info = {
-                'timestamp': current_time,
-                'Device Type': 'Wi-Fi',
-                'Device Name': cleaned_device_name,
-                'MAC Address': cleaned_mac_address,
-                'Signal Strength': device.signal
-            }
-            connected_devices.append(device_info)
+        for device in lsblk_devices:
+            if device:
+                # Split the device line into columns
+                columns = device.split()
+                if len(columns) >= 3:  # Ensure at least NAME, SIZE, and TYPE are present
+                    name = columns[0]
+                    size = columns[1]
+                    type_ = columns[2]
+                    mountpoint = columns[3] if len(columns) >= 4 else None  # MOUNTPOINT might be missing
 
-    elif current_os == 'darwin':  # macOS
-        # macOS doesn't have a straightforward way like `iwconfig`, use `system_profiler` for Wi-Fi details
-        # This method is used for fetching Wi-Fi details on macOS
-        wifi_details = []
-        process = psutil.Popen(['system_profiler', 'SPNetworkDataType'], stdout=psutil.PIPE)
-        stdout, stderr = process.communicate()
-        wifi_info = stdout.decode().split('\n')
+                    # Only consider mounted partitions
+                    if type_ == 'part' and mountpoint:
+                        usage = psutil.disk_usage(mountpoint)
+                        device_type = 'Secondary Storage'
 
-        # Extract relevant Wi-Fi information
-        for line in wifi_info:
-            if 'SSID' in line:
-                cleaned_device_name = line.split(':')[1].strip()
-                wifi_details.append(cleaned_device_name)
+                        # Check if the mountpoint starts with '/media'
+                        if mountpoint.startswith('/media'):
+                            device_type = 'Pen drive'
+                            pen_drive_detected = True
 
-        # Collect Wi-Fi devices
-        for device in wifi_details:
-            device_info = {
-                'timestamp': current_time,
-                'Device Type': 'Wi-Fi',
-                'Device Name': device,
-                'MAC Address': 'N/A',  # MAC Address can't be fetched directly from system_profiler
-                'Signal Strength': 'N/A'  # Signal Strength not available
-            }
-            connected_devices.append(device_info)
+                        storage_info = {
+                            'timestamp': current_time,
+                            'Device Type': device_type,
+                            'Device Name': name,
+                            'Mount Point': mountpoint,
+                            'Total Size (GB)': round(usage.total / (1024 ** 3), 2),
+                            'Used Size (GB)': round(usage.used / (1024 ** 3), 2),
+                            'Free Size (GB)': round(usage.free / (1024 ** 3), 2),
+                        }
+                        connected_devices.append(storage_info)
 
-    else:
-        print(f"Unsupported OS: {current_os}. Skipping Wi-Fi device collection.")
-
-    # Collect removable storage devices (e.g., pen drives) for all platforms
-    partitions = psutil.disk_partitions()
-    for partition in partitions:
-        if 'removable' in partition.opts:
-            usage = psutil.disk_usage(partition.mountpoint)
-            storage_info = {
-                'timestamp': current_time,
-                'Device Type': 'Pen drive',
-                'Device Name': partition.device,
-                'Mount Point': partition.mountpoint,
-                'File System Type': partition.fstype,
-                'Total Size (GB)': round(usage.total / (1024 ** 3),2),
-                'Used Size (GB)': round(usage.used / (1024 ** 3),2),
-                'Free Size (GB)': round(usage.free / (1024 ** 3),2),
-            }
-            connected_devices.append(storage_info)
-            pen_drive_detected = True
+    except Exception as e:
+        print(f"Error collecting block devices: {e}")
 
     # Print connected devices details
     for device in connected_devices:
@@ -319,7 +261,6 @@ def collect_connected_devices(mac_address):
         print(f"MAC Address: {device.get('MAC Address', 'N/A')}")
         print(f"Signal Strength: {device.get('Signal Strength', 'N/A')}")
         print(f"Mount Point: {device.get('Mount Point', 'N/A')}")
-        print(f"File System Type: {device.get('File System Type', 'N/A')}")
         print(f"Total Size (GB): {device.get('Total Size (GB)', 'N/A')}")
         print(f"Used Size (GB): {device.get('Used Size (GB)', 'N/A')}")
         print(f"Free Size (GB): {device.get('Free Size (GB)', 'N/A')}")
@@ -396,7 +337,7 @@ def collect_application_usage(mac_address):
                 print(f"New application {name} (PID: {pid}) started at {start_time}.")
 
                 # Check if the new process is a browser
-                if name.lower() in ['firefox.exe', 'msedge.exe', 'safari.exe', 'Google Chrome', 'firefox', 'safari', 'google-chrome', 'chromium', 'opera']:
+                if name.lower() in ['firefox', 'chrome', 'chromium', 'opera']:
                     cheating_collection.insert_one({
                         'mac_address': mac_address,
                         'type_of_cheating': f'{name} opened',
@@ -433,7 +374,7 @@ def collect_system_health_data():
     cpu_usage = psutil.cpu_percent(interval=1)
     memory_info = psutil.virtual_memory()
     disk_usage = psutil.disk_usage('/')
-    
+   
     return {
         'cpu_usage': cpu_usage,
         'memory_used': round(memory_info.used / (1024**3), 2),
@@ -447,7 +388,7 @@ def collect_system_health_for_ml(mac_address):
     """Store system health data for machine learning."""
     db = client[mac_address]
     collection = db[f'system_health_{mac_address}']
-    
+   
     health_data = collect_system_health_data()
     collection.insert_one(health_data)
 
@@ -455,52 +396,52 @@ def train_predictive_model(mac_address):
     """Train the machine learning model for predictive maintenance."""
     db = client[mac_address]
     collection = db[f'system_health_{mac_address}']
-    
+   
     # Load data from MongoDB
     data = list(collection.find())
     if len(data) < 10:  # Ensure we have enough data to train
         print("Not enough data to train the model.")
         return None
-    
+   
     # Prepare data for model training
     X = []
     y = []
-    
+   
     for record in data:
         X.append([record['cpu_usage'], record['memory_used'], record['disk_used']])
         y.append(record['cpu_usage'])
-    
+   
     X = np.array(X)
     y = np.array(y)
-    
+   
     # Split the data into train and test sets (80% train, 20% test)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    
+   
     # Train the model
     model = LinearRegression()
     model.fit(X_train, y_train)
-    
+   
     # Make predictions on both the training and test data
     train_predictions = model.predict(X_train)
     test_predictions = model.predict(X_test)
-    
+   
     # Calculate and print R-squared values
     train_accuracy = r2_score(y_train, train_predictions)
     test_accuracy = r2_score(y_test, test_predictions)
-    
+   
     print(f"Model accuracy on training data (R-squared): {train_accuracy:.2f}")
     print(f"Model accuracy on test data (R-squared): {test_accuracy:.2f}")
-    
+   
     return model
 
 def predict_failure(mac_address, model):
     """Use the trained model to predict potential failures."""
     health_data = collect_system_health_data()
     X_new = np.array([[health_data['cpu_usage'], health_data['memory_used'], health_data['disk_used']]])
-    
+   
     # Predict failure likelihood based on current system state
     prediction = model.predict(X_new)[0]
-    
+   
     # If CPU usage is predicted to exceed a threshold, trigger an alert
     if prediction > 5:  # Example threshold, you can adjust this
         print(f"Warning: High CPU usage predicted ({prediction:.2f}%)! System might require maintenance soon.")
@@ -509,7 +450,7 @@ def predict_failure(mac_address, model):
         alert_collection.insert_one({
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'predicted_cpu_usage': prediction,
-            'alert': 'High CPU usage predicted. Reduce the number of applications you are using.'
+            'alert': 'High CPU usage predicted. Possible maintenance required.'
         })
 
 # Start monitoring system health data and train/predict with ML model
@@ -518,15 +459,14 @@ def monitor_with_ml(mac_address):
     model = None
     while True:
         collect_system_health_for_ml(mac_address)
-        
+       
         # Train model every 10 iterations (can adjust this frequency)
         if not model or int(time.time()) % 10 == 0:
             model = train_predictive_model(mac_address)
-        
+       
         # Make failure prediction if model exists
         if model:
             predict_failure(mac_address, model)
-
 
 def retrieve_browser_history(mac_address):
     """Retrieve and store browser history details in MongoDB."""
@@ -605,7 +545,6 @@ def retrieve_browser_history(mac_address):
         print("No browser history data stored.")
         return
 
-
 class FileChangeHandler(FileSystemEventHandler):
     """Handle file system events."""
     def on_modified(self, event):
@@ -623,7 +562,7 @@ class FileChangeHandler(FileSystemEventHandler):
 if __name__ == "__main__":
     # mac_address = input("Enter the MAC address to track: ")
     mac_address = get_mac_address()
-    
+   
     # Start monitoring in separate threads
     import threading
 
