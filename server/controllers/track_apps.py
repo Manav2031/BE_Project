@@ -16,13 +16,14 @@ from browser_history import get_history
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv  # Import the dotenv module
-import os  # Import the os module to access environment variables
+# import os  # Import the os module to access environment variables
 
 # Load environment variables from .env file
 load_dotenv()
 
 # MongoDB connection
-mongo_url = os.getenv('MONGO_URL')  # Read MongoDB URI from environment variables
+# mongo_url = os.getenv('MONGO_URL')  # Read MongoDB URI from environment variables
+mongo_url = "mongodb+srv://manav2031:Ma310703@cluster0.8n47utm.mongodb.net/internship_project"
 client = MongoClient(mongo_url)
 
 
@@ -48,6 +49,15 @@ system_processes_macos = [
 min_pid_user = 200
 
 cheating_collection = client['cheating_devices'].cheating_devices
+
+def get_mac_address():
+    """Automatically get the MAC address of the machine, excluding loopback and virtual interfaces."""
+    for interface, addrs in psutil.net_if_addrs().items():
+        if interface != "lo":  # Exclude loopback
+            for addr in addrs:
+                if addr.family == psutil.AF_LINK and not addr.address.startswith("00:00:00"):  # Check for valid MAC
+                    return addr.address.replace(':', '_').upper()
+    return None  # Return None if no valid MAC address is found
 
 def get_running_processes():
     """Retrieve a list of currently running processes excluding OS and system-related processes."""
@@ -612,7 +622,8 @@ class FileChangeHandler(FileSystemEventHandler):
             print(f"File deleted: {event.src_path}")
 
 if __name__ == "__main__":
-    mac_address = input("Enter the MAC address to track: ")
+    # mac_address = input("Enter the MAC address to track: ")
+    mac_address = get_mac_address()
     
     # Start monitoring in separate threads
     import threading
@@ -680,12 +691,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
-
-# def get_mac_address():
-#     """Automatically get the MAC address of the machine, excluding loopback and virtual interfaces."""
-#     for interface, addrs in psutil.net_if_addrs().items():
-#         if interface != "lo":  # Exclude loopback
-#             for addr in addrs:
-#                 if addr.family == psutil.AF_LINK and not addr.address.startswith("00:00:00"):  # Check for valid MAC
-#                     return addr.address.replace(':', '_').upper()
-#     return None  # Return None if no valid MAC address is found
