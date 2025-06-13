@@ -9,11 +9,11 @@ from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_absolute_error
 from pymongo import MongoClient
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from sklearn.linear_model import LinearRegression
+# from sklearn.linear_model import LinearRegression
 from scapy.all import sniff, IP
 from browser_history import get_history
 import numpy as np
@@ -484,6 +484,9 @@ def train_predictive_model(mac_address):
     model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
+    # model1 = LinearRegression()
+    # model1.fit(X_train, y_train)
+
     # Save model and scaler for reuse
     with open(f'{mac_address}_model.pkl', 'wb') as f:
         pickle.dump(model, f)
@@ -493,7 +496,18 @@ def train_predictive_model(mac_address):
     train_score = r2_score(y_train, model.predict(X_train))
     test_score = r2_score(y_test, model.predict(X_test))
 
+    train_mae = mean_absolute_error(y_train, model.predict(X_train))
+    test_mae = mean_absolute_error(y_test, model.predict(X_test))
+
+    # train_mae_lr = mean_absolute_error(y_train, model1.predict(X_train))
+    # test_mae_lr = mean_absolute_error(y_test, model1.predict(X_test))
+
+    print("Random Forest Regression")
     print(f"Training R2: {train_score:.2f}, Test R2: {test_score:.2f}")
+    print(f"Training MAE: {train_mae:.2f}, Test MAE: {test_mae:.2f}")
+
+    # print("Linear Regression")
+    # print(f"Training MAE: {train_mae_lr:.2f}, Test MAE: {test_mae_lr:.2f}")
 
     return model, scaler
 
@@ -536,7 +550,7 @@ def monitor_with_ml(mac_address):
         current_time = int(time.time())
 
         # Retrain model periodically
-        if current_time % 600 == 0:  # Every 10 minutes
+        if current_time % 6 == 0:  # Every 10 minutes
             train_predictive_model(mac_address)
 
         predict_failure(mac_address)

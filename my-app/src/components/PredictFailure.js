@@ -21,6 +21,15 @@ const AlertBox = styled.div`
   max-width: 400px;
 `;
 
+const TableHeading = styled.h2`
+  margin-top: 100px;
+  padding: 10px 0;
+  color: #333;
+  text-align: center;
+  width: 100%;
+  border-bottom: 2px solid #007bff;
+`;
+
 const Progress = styled.div`
   width: 100%;
   background: #ddd;
@@ -70,7 +79,7 @@ const PredictFailure = () => {
 
   return (
     <Container>
-      <h2 style={{ marginTop: '100px' }}>Predict System Failure</h2>
+      <TableHeading>Predict System Failure</TableHeading>
 
       {loading && <p>Loading prediction...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
