@@ -70,7 +70,7 @@ const PredictFailure = () => {
 
   return (
     <Container>
-      <h2 style={{ marginTop: '400px' }}>Predict System Failure</h2>
+      <h2 style={{ marginTop: '100px' }}>Predict System Failure</h2>
 
       {loading && <p>Loading prediction...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
