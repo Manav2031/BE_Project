@@ -3,10 +3,13 @@ import platform
 import socket
 import winsound
 import pywifi
+import pickle
 import time
 from datetime import datetime
-from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import r2_score
 from pymongo import MongoClient
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -429,7 +432,6 @@ def retrieve_application_usage(mac_address):
     return df
 
 def collect_system_health_data():
-    """Collect system health data like CPU, memory, and disk usage."""
     cpu_usage = psutil.cpu_percent(interval=1)
     memory_info = psutil.virtual_memory()
     disk_usage = psutil.disk_usage('/')
@@ -444,7 +446,6 @@ def collect_system_health_data():
     }
 
 def collect_system_health_for_ml(mac_address):
-    """Store system health data for machine learning."""
     db = client[mac_address]
     collection = db[f'system_health_{mac_address}']
     
@@ -452,58 +453,73 @@ def collect_system_health_for_ml(mac_address):
     collection.insert_one(health_data)
 
 def train_predictive_model(mac_address):
-    """Train the machine learning model for predictive maintenance."""
     db = client[mac_address]
     collection = db[f'system_health_{mac_address}']
     
-    # Load data from MongoDB
     data = list(collection.find())
-    if len(data) < 10:  # Ensure we have enough data to train
+    if len(data) < 30:  # More data for better accuracy
         print("Not enough data to train the model.")
         return None
     
-    # Prepare data for model training
     X = []
     y = []
-    
     for record in data:
-        X.append([record['cpu_usage'], record['memory_used'], record['disk_used']])
+        features = [
+            record['memory_used'], 
+            record['memory_total'], 
+            record['disk_used'], 
+            record['disk_total']
+        ]
+        X.append(features)
         y.append(record['cpu_usage'])
-    
+
     X = np.array(X)
     y = np.array(y)
-    
-    # Split the data into train and test sets (80% train, 20% test)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    
-    # Train the model
-    model = LinearRegression()
-    model.fit(X_train, y_train)
-    
-    # Make predictions on both the training and test data
-    train_predictions = model.predict(X_train)
-    test_predictions = model.predict(X_test)
-    
-    # Calculate and print R-squared values
-    train_accuracy = r2_score(y_train, train_predictions)
-    test_accuracy = r2_score(y_test, test_predictions)
-    
-    print(f"Model accuracy on training data (R-squared): {train_accuracy:.2f}")
-    print(f"Model accuracy on test data (R-squared): {test_accuracy:.2f}")
-    
-    return model
 
-def predict_failure(mac_address, model):
-    """Use the trained model to predict potential failures."""
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
+
+    # Save model and scaler for reuse
+    with open(f'{mac_address}_model.pkl', 'wb') as f:
+        pickle.dump(model, f)
+    with open(f'{mac_address}_scaler.pkl', 'wb') as f:
+        pickle.dump(scaler, f)
+
+    train_score = r2_score(y_train, model.predict(X_train))
+    test_score = r2_score(y_test, model.predict(X_test))
+
+    print(f"Training R2: {train_score:.2f}, Test R2: {test_score:.2f}")
+
+    return model, scaler
+
+def predict_failure(mac_address):
+    try:
+        with open(f'{mac_address}_model.pkl', 'rb') as f:
+            model = pickle.load(f)
+        with open(f'{mac_address}_scaler.pkl', 'rb') as f:
+            scaler = pickle.load(f)
+    except FileNotFoundError:
+        print("Model not found. Training the model now...")
+        result = train_predictive_model(mac_address)
+        if result is None:
+            print("Training failed. Not enough data.")
+            return
+        model, scaler = result
+
     health_data = collect_system_health_data()
-    X_new = np.array([[health_data['cpu_usage'], health_data['memory_used'], health_data['disk_used']]])
-    
-    # Predict failure likelihood based on current system state
-    prediction = model.predict(X_new)[0]
-    
-    # If CPU usage is predicted to exceed a threshold, trigger an alert
-    if prediction > 5:  # Example threshold, you can adjust this
-        print(f"Warning: High CPU usage predicted ({prediction:.2f}%)! System might require maintenance soon.")
+    X_new = np.array([[health_data['memory_used'], health_data['memory_total'], health_data['disk_used'], health_data['disk_total']]])
+    X_new_scaled = scaler.transform(X_new)
+
+    prediction = model.predict(X_new_scaled)[0]
+
+    print(f"Predicted CPU usage: {prediction:.2f}%")
+
+    if prediction > 5:
         db = client[mac_address]
         alert_collection = db[f'failure_alerts_{mac_address}']
         alert_collection.insert_one({
@@ -511,21 +527,120 @@ def predict_failure(mac_address, model):
             'predicted_cpu_usage': prediction,
             'alert': 'High CPU usage predicted. Reduce the number of applications you are using.'
         })
+        print(f"⚠️ Alert: High CPU usage predicted ({prediction:.2f}%)!")
 
-# Start monitoring system health data and train/predict with ML model
+
 def monitor_with_ml(mac_address):
-    """Collect system health data and predict failures using machine learning."""
-    model = None
     while True:
         collect_system_health_for_ml(mac_address)
+        current_time = int(time.time())
+
+        # Retrain model periodically
+        if current_time % 600 == 0:  # Every 10 minutes
+            train_predictive_model(mac_address)
+
+        predict_failure(mac_address)
+        time.sleep(5)
+
+
+# def collect_system_health_data():
+#     """Collect system health data like CPU, memory, and disk usage."""
+#     cpu_usage = psutil.cpu_percent(interval=1)
+#     memory_info = psutil.virtual_memory()
+#     disk_usage = psutil.disk_usage('/')
+    
+#     return {
+#         'cpu_usage': cpu_usage,
+#         'memory_used': round(memory_info.used / (1024**3), 2),
+#         'memory_total': round(memory_info.total / (1024**3), 2),
+#         'disk_used': round(disk_usage.used / (1024**3), 2),
+#         'disk_total': round(disk_usage.total / (1024**3), 2),
+#         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#     }
+
+# def collect_system_health_for_ml(mac_address):
+#     """Store system health data for machine learning."""
+#     db = client[mac_address]
+#     collection = db[f'system_health_{mac_address}']
+    
+#     health_data = collect_system_health_data()
+#     collection.insert_one(health_data)
+
+# def train_predictive_model(mac_address):
+#     """Train the machine learning model for predictive maintenance."""
+#     db = client[mac_address]
+#     collection = db[f'system_health_{mac_address}']
+    
+#     # Load data from MongoDB
+#     data = list(collection.find())
+#     if len(data) < 10:  # Ensure we have enough data to train
+#         print("Not enough data to train the model.")
+#         return None
+    
+#     # Prepare data for model training
+#     X = []
+#     y = []
+    
+#     for record in data:
+#         X.append([record['cpu_usage'], record['memory_used'], record['disk_used']])
+#         y.append(record['cpu_usage'])
+    
+#     X = np.array(X)
+#     y = np.array(y)
+    
+#     # Split the data into train and test sets (80% train, 20% test)
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+#     # Train the model
+#     model = LinearRegression()
+#     model.fit(X_train, y_train)
+    
+#     # Make predictions on both the training and test data
+#     train_predictions = model.predict(X_train)
+#     test_predictions = model.predict(X_test)
+    
+#     # Calculate and print R-squared values
+#     train_accuracy = r2_score(y_train, train_predictions)
+#     test_accuracy = r2_score(y_test, test_predictions)
+    
+#     print(f"Model accuracy on training data (R-squared): {train_accuracy:.2f}")
+#     print(f"Model accuracy on test data (R-squared): {test_accuracy:.2f}")
+    
+#     return model
+
+# def predict_failure(mac_address, model):
+#     """Use the trained model to predict potential failures."""
+#     health_data = collect_system_health_data()
+#     X_new = np.array([[health_data['cpu_usage'], health_data['memory_used'], health_data['disk_used']]])
+    
+#     # Predict failure likelihood based on current system state
+#     prediction = model.predict(X_new)[0]
+    
+#     # If CPU usage is predicted to exceed a threshold, trigger an alert
+#     if prediction > 5:  # Example threshold, you can adjust this
+#         print(f"Warning: High CPU usage predicted ({prediction:.2f}%)! System might require maintenance soon.")
+#         db = client[mac_address]
+#         alert_collection = db[f'failure_alerts_{mac_address}']
+#         alert_collection.insert_one({
+#             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+#             'predicted_cpu_usage': prediction,
+#             'alert': 'High CPU usage predicted. Reduce the number of applications you are using.'
+#         })
+
+# # Start monitoring system health data and train/predict with ML model
+# def monitor_with_ml(mac_address):
+#     """Collect system health data and predict failures using machine learning."""
+#     model = None
+#     while True:
+#         collect_system_health_for_ml(mac_address)
         
-        # Train model every 10 iterations (can adjust this frequency)
-        if not model or int(time.time()) % 10 == 0:
-            model = train_predictive_model(mac_address)
+#         # Train model every 10 iterations (can adjust this frequency)
+#         if not model or int(time.time()) % 10 == 0:
+#             model = train_predictive_model(mac_address)
         
-        # Make failure prediction if model exists
-        if model:
-            predict_failure(mac_address, model)
+#         # Make failure prediction if model exists
+#         if model:
+#             predict_failure(mac_address, model)
 
 
 def retrieve_browser_history(mac_address):

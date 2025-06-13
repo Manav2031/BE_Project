@@ -113,6 +113,9 @@ function Functionality() {
           <Button to="/view-graphs" state={{ macAddress }}>
             <FaChartBar /> View Graphs
           </Button>
+          <Button to="/view-predict-failure" state={{ macAddress }}>
+            <MdOutlineSmsFailed /> Predict Failure
+          </Button>
         </ButtonContainer>
       </Container>
     </Section>

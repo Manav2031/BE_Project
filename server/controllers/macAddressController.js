@@ -621,6 +621,43 @@ exports.displayFailureAlerts = async (req, res) => {
   }
 };
 
+exports.predictFailure = async (req, res) => {
+  const { mac_address } = req.params;
+
+  if (!mac_address) {
+    return res.status(400).json({ message: 'MAC address is required' });
+  }
+
+  const client = new MongoClient(MONGODB_URI);
+  try {
+    await client.connect();
+    const database = client.db(mac_address);
+    const collection = database.collection(`failure_alerts_${mac_address}`);
+
+    // Get the latest prediction alert
+    const latestAlert = await collection.findOne(
+      {},
+      { sort: { timestamp: -1 } }
+    );
+
+    if (!latestAlert) {
+      return res
+        .status(404)
+        .json({ message: 'No prediction data available yet.' });
+    }
+
+    res.status(200).json({
+      predicted_cpu_usage: latestAlert.predicted_cpu_usage,
+      alert: latestAlert.alert,
+    });
+  } catch (error) {
+    console.error('Error fetching prediction:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    await client.close();
+  }
+};
+
 exports.deleteFailureAlerts = async (req, res) => {
   const { macAddress, startTimestamp, endTimestamp } = req.body;
 

@@ -49,4 +49,8 @@ router.post(
   macAddressController.deleteCheatingDevices
 );
 router.post('/shutdown-system', macAddressController.shutdownSystem);
+router.get(
+  '/predict-failure/:mac_address',
+  macAddressController.predictFailure
+);
 module.exports = router;

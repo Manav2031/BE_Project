@@ -273,7 +273,7 @@ const FailureAlerts = () => {
             <thead>
               <tr>
                 <Th>Timestamp</Th>
-                <Th>Predicted CPU Usage</Th>
+                <Th>Predicted CPU Usage (in %)</Th>
                 <Th>Alerts</Th>
               </tr>
             </thead>

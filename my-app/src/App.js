@@ -24,6 +24,7 @@ import FailureAlerts from './components/FailureAlerts.js';
 // import PowerBIDashboard from './components/PowerBIDashboard.js';
 import CheatingDevices from './components/CheatingDevices.js';
 import CheatingDevicesGraphs from './components/CheatingDevicesGraphs.js';
+import PredictFailure from './components/PredictFailure.js';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
         <Route path="/add-system" element={<AddSystem />} />
         <Route path="/view-logs" element={<ViewLogs />} />
         <Route path="/view-graphs" element={<ViewGraphs />} />
+        <Route path="/view-predict-failure" element={<PredictFailure />} />
       </Routes>
       <ToastContainer />
       <Footer />
