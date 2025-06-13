@@ -79,7 +79,9 @@ const PredictFailure = () => {
 
   return (
     <Container>
-      <TableHeading>Predict System Failure</TableHeading>
+      <TableHeading>
+        Predict System Failure for MAC Address: {mac_address}
+      </TableHeading>
 
       {loading && <p>Loading prediction...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
