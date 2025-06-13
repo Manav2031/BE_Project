@@ -621,8 +621,8 @@ class FileChangeHandler(FileSystemEventHandler):
             print(f"File deleted: {event.src_path}")
 
 if __name__ == "__main__":
-    # mac_address = input("Enter the MAC address to track: ")
-    mac_address = get_mac_address()
+    mac_address = input("Enter the MAC address to track: ")
+    # mac_address = get_mac_address()
     
     # Start monitoring in separate threads
     import threading
