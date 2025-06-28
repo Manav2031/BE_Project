@@ -4,15 +4,15 @@ This project is a full-stack application developed using Electron.js for desktop
 
 ## 📁 Project Structure
 
-BE_Project-main/
-├── .editorconfig
-├── .gitignore
-├── .prettierrc
-├── README.md
-├── main.js # Electron main process entry
-├── package.json # Project metadata and scripts
-├── package-lock.json
-├── my-app/ # React frontend application
+BE_Project-main/ <br>
+├── .editorconfig <br>
+├── .gitignore <br>
+├── .prettierrc <br>
+├── README.md <br>
+├── main.js # Electron main process entry <br>
+├── package.json # Project metadata and scripts <br>
+├── package-lock.json <br>
+├── my-app/ # React frontend application <br>
 ├── server/ # Express backend server
 
 ## 🚀 Getting Started
@@ -25,27 +25,27 @@ BE_Project-main/
 
 ### 1️⃣ Install Dependencies
 
-From the root directory:
+From the root directory: <br>
 npm install
 
-Install frontend dependencies:
-cd my-app
+Install frontend dependencies: <br>
+cd my-app <br>
 npm install
 
-Install backend dependencies:
-cd server
+Install backend dependencies: <br>
+cd server <br>
 npm install
 
 ### 2️⃣ Run the Application
-In one terminal, start the backend server:
-cd server
+In one terminal, start the backend server: <br>
+cd server <br>
 npm run dev
 
-In a second terminal, run the frontend React app:
-cd my-app
+In a second terminal, run the frontend React app: <br>
+cd my-app <br>
 npm start
 
-In a third terminal (from root), launch Electron:
+In a third terminal (from root), launch Electron: <br>
 npm run dev:watch
 
 Ensure proper CORS and port settings for frontend-backend communication.
