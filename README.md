@@ -28,6 +28,7 @@ BE_Project-main/
 From the root directory:  
 ```bash
 npm install
+```bash
 
 Install frontend dependencies:
 cd my-app
