@@ -79,8 +79,8 @@ Make sure ports and API endpoints are correctly set.
 Consider using tools like Electron Builder for packaging.
 
 ## 👨‍💻 Author
-Manav Mehta
-B.E. Computer Engineering
+Manav Mehta <br>
+B.E. Computer Engineering <br>
 Pune Institute of Computer Technology (PICT)
 
 ## 📃 License
