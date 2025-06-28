@@ -25,10 +25,8 @@ BE_Project-main/
 
 ### 1️⃣ Install Dependencies
 
-From the root directory:  
-```bash
+From the root directory:
 npm install
-```bash
 
 Install frontend dependencies:
 cd my-app
