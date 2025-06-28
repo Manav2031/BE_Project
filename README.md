@@ -15,10 +15,6 @@ BE_Project-main/
 ├── my-app/ # React frontend application
 ├── server/ # Express backend server
 
-markdown
-Copy
-Edit
-
 ## 🚀 Getting Started
 
 ### Prerequisites
