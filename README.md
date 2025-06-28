@@ -61,7 +61,7 @@ Ensure proper CORS and port settings for frontend-backend communication.
 🎯 Modular and scalable project structure
 
 ## 📦 Technologies Used
-Electron.js
+MongoDB
 
 React.js
 
@@ -69,9 +69,7 @@ Node.js
 
 Express.js
 
-JavaScript (ES6+)
-
-HTML5/CSS3
+Python
 
 ## 📌 Notes
 Make sure ports and API endpoints are correctly set.
