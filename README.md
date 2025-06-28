@@ -23,50 +23,32 @@ BE_Project-main/
 - [npm](https://www.npmjs.com/)
 - [Electron](https://www.electronjs.org/)
 
-## 1️⃣ Install Dependencies
+### 1️⃣ Install Dependencies
 
-From the root directory:  
-```bash
+From the root directory:
 npm install
+
 Install frontend dependencies:
-
-bash
-Copy
-Edit
-cd my-app  
+cd my-app
 npm install
+
 Install backend dependencies:
-
-bash
-Copy
-Edit
-cd server  
+cd server
 npm install
-2️⃣ Run the Application
+
+### 2️⃣ Run the Application
 In one terminal, start the backend server:
-
-bash
-Copy
-Edit
-cd server  
+cd server
 npm run dev
+
 In a second terminal, run the frontend React app:
-
-bash
-Copy
-Edit
-cd my-app  
+cd my-app
 npm start
+
 In a third terminal (from root), launch Electron:
-
-bash
-Copy
-Edit
 npm run dev:watch
-⚠️ Ensure proper CORS and port settings for frontend-backend communication.
 
-Copy
-Edit
+Ensure proper CORS and port settings for frontend-backend communication.
 
 
 ## 🛠 Features
